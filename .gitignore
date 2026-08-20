@@ -37,3 +37,5 @@ Thumbs.db
 # keeps the repo light per the project owner's request.
 /References/
 images/download.png
+
+**/*.quarto_ipynb
