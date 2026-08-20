@@ -241,10 +241,15 @@ This is the "zoom out" slide -- after all the theory, ground it in three functio
 
 ```r
 mod = bayes_met(
-  data = MyData, gen = "Genotype", loc = "Location",
-  repl = ..., reg = ..., year = ...,
-  res.het = TRUE, trait = "Phenotype",
-  iter = 2000, cores = 2, chains = 4)
+  data    = MyData,
+  gen     = "Genotype",
+  loc     = "Location",
+  repl    = ...,
+  reg     = ...,
+  year    = ...,
+  res.het = TRUE,
+  trait   = "Phenotype",
+  iter    = 2000, cores = 2, chains = 4)
 ```
 
 ::: {.incremental}
