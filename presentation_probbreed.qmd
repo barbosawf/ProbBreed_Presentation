@@ -155,7 +155,7 @@ This shift — from a point estimate to a **probability of success** — is what
 - Payoff: the **entire posterior** of every genotypic effect feeds directly into probability calculations
 
 <div class="notes">
-[Give the table a moment to be read before you talk over it.] Walk row by row: "Output" -- frequentist gives you one number per genotype, Bayesian gives you a whole distribution of plausible values. "Uncertainty" -- ratios and rankings are notoriously hard to get confidence intervals for in the frequentist world; here it falls out for free. "Risk of recommendation" is the row that matters most to breeders -- literally not computable without a posterior. Finish on the bottom bullets: mention Stan/NUTS only briefly (no need to teach HMC here), and flag that the prior hyperparameter is *data-driven*, not something the user has to tune -- we'll come back to the exact priors in a few slides.
+[Give the table a moment to be read before you talk over it.] Walk row by row: "Output" -- frequentist gives you one number per genotype, Bayesian gives you a whole distribution of plausible values. "Uncertainty" -- ratios and rankings are notoriously hard to get confidence intervals for in the frequentist world; here it falls out for free. "Risk of recommendation" is the row that matters most to breeders -- literally not computable without a posterior. Finish on the bottom bullets: mention Stan/NUTS only briefly (no need to teach HMC here), and flag that the prior hyperparameter is *data-driven*, not something the user has to tune.
 </div>
 
 ## The core idea: defining "success"
@@ -234,138 +234,34 @@ flowchart LR
 | `prob_sup()` | Computes every probability above, across and within environments |
 
 <div class="notes">
-This is the "zoom out" slide -- after all the theory, ground it in three function calls. [Trace the arrow left to right with your finger or the laser pointer.] "Everything you just saw collapses into three R functions: fit, extract, compute." Mention that this is deliberately the whole pipeline -- no other steps required -- which is the accessibility contribution of the package relative to the original Dias et al. method, which required writing Stan code by hand. We're about to spend the next several slides just on step one, `bayes_met()`, because that's where most of the modeling decisions live.
+This is the "zoom out" slide -- after all the theory, ground it in three function calls. [Trace the arrow left to right with your finger or the laser pointer.] "Everything you just saw collapses into three R functions: fit, extract, compute." Mention that this is deliberately the whole pipeline -- no other steps required -- which is the accessibility contribution of the package relative to the original Dias et al. method, which required writing Stan code by hand. We're about to walk through all three steps in turn, starting with `bayes_met()` next.
 </div>
 
-## Choosing a model: without year effect
+## `bayes_met()`: the function and its parameters {.smaller}
 
-::: columns
-::: {.column width="46%"}
 ```r
 mod = bayes_met(
-  data = MyData,
-  gen  = "Genotype",
-  loc  = "Location",
-  repl = ...,     # NULL / 'Replicate' /
-                  # c('Replicate','Block')
-  reg  = ...,     # NULL or 'Region'
-  year = NULL,    # <- no year effect
+  data    = MyData,
+  gen     = "Genotype",
+  loc     = "Location",
+  repl    = ...,      # NULL / 'Replicate' / c('Replicate','Block')
+  reg     = ...,      # NULL or 'Region'
+  year    = ...,      # NULL or 'Year'
   res.het = TRUE,
-  trait = "Phenotype",
-  iter = 2000, cores = 2, chains = 4)
+  trait   = "Phenotype",
+  iter    = 2000, cores = 2, chains = 4)
 ```
-:::
 
-::: {.column width="4%"}
+::: {.incremental}
+- `gen`, `loc`, `trait` — required in every call: genotype, location, and response variable columns
+- `repl`, `reg`, `year` — the three switches that together select which of the **nine models** gets fit (next slide)
+- `res.het` — homogeneous (`FALSE`) vs. heterogeneous (`TRUE`) residual variance across locations
+- `iter` / `cores` / `chains` — MCMC effort; more is slower, but more reliable
+- Extra arguments pass straight through to `rstan::sampling()` (e.g. `seed`, `adapt_delta`)
 :::
-
-::: {.column width="50%"}
-```{=html}
-<div class="model-scheme">
-  <div class="scheme-branch">
-    <div class="scheme-header header-neutral">reg = NULL</div>
-    <div class="scheme-leaf leaf-green">Entry-mean<br><code>repl = NULL</code></div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-  <div class="scheme-branch">
-    <div class="scheme-header header-amber">reg = 'Region'</div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-</div>
-```
-:::
-:::
-
-Five models live here: the entry-mean model **only** exists in this branch (`repl`, `reg`, and `year` all `NULL` together).
 
 <div class="notes">
-[Point at the code on the left first.] Walk through the generic call: gen, loc, and trait always required; repl/reg/year are the three switches. [Then point at the diagram on the right.] "When there's no year effect, bayes_met gives you five models: split first by whether you supply regions, then by your experimental design -- entry-mean if you only have adjusted means, RCBD if you have replicates, IBD if you have incomplete blocks." Stress the callout at the bottom: entry-mean is special, it's the *only* model where repl, reg, and year are all NULL simultaneously -- you can't combine entry-mean with regions or years.
-</div>
-
-## Choosing a model: with year effect
-
-::: columns
-::: {.column width="46%"}
-```r
-mod = bayes_met(
-  data = MyData,
-  gen  = "Genotype",
-  loc  = "Location",
-  repl = ...,     # 'Replicate' /
-                  # c('Replicate','Block')
-  reg  = ...,     # NULL or 'Region'
-  year = "Year",  # <- year effect included
-  res.het = TRUE,
-  trait = "Phenotype",
-  iter = 2000, cores = 2, chains = 4)
-```
-:::
-
-::: {.column width="4%"}
-:::
-
-::: {.column width="50%"}
-```{=html}
-<div class="model-scheme">
-  <div class="scheme-branch">
-    <div class="scheme-header header-neutral">reg = NULL</div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-  <div class="scheme-branch">
-    <div class="scheme-header header-amber">reg = 'Region'</div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-</div>
-```
-:::
-:::
-
-Four models live here — no entry-mean variant, since a year effect always implies replicated data.
-
-<div class="notes">
-Same structure as the previous slide, so you can move faster here -- [say "same idea, one switch flips"] and point at `year = "Year"` in the code. [Point at the diagram.] "With a year effect, entry-mean drops out entirely -- you always need RCBD or IBD, with or without regions -- four combinations total." If someone asks why: multi-year data structurally requires some notion of replication across time, which entry-mean's adjusted-means-only design doesn't support. Combined with the previous slide, that's all nine models bayes_met() can fit.
-</div>
-
-## Example: without year effect {.big-code}
-
-```r
-mod = bayes_met(
-  data = MyData,
-  gen = "Genotype",
-  loc = "Location",
-  repl = "Block",
-  reg = "Region",
-  year = NULL,
-  res.het = FALSE,
-  trait = "Phenotype",
-  iter = 2000, cores = 2, chains = 4)
-```
-
-<div class="notes">
-This slide is intentionally just one code block, full size, nothing else competing for attention. [Read the code aloud, line by line.] This is the RCBD-with-regions model: replicated data, no year information, and regions declared. Mention that this is taken directly from the package documentation, so it's exactly the syntax they'll find in `?bayes_met` and on the package website if they want to look it up later.
-</div>
-
-## Example: with year effect {.big-code}
-
-```r
-mod = bayes_met(
-  data = MyData,
-  gen = "Genotype",
-  loc = "Location",
-  repl = "Block",
-  reg = "Region",
-  year = 'Year',
-  res.het = FALSE,
-  trait = "Phenotype",
-  iter = 2000, cores = 2, chains = 4)
-```
-
-<div class="notes">
-[Compare side by side with the previous slide -- if possible, flip back one slide briefly to show the contrast.] Only one argument changed: `year = 'Year'` instead of `NULL`. Emphasize how little the user has to think about here -- the same five arguments (repl, reg, year, res.het, trait) fully determine which of the nine models gets fit, and the package handles the underlying Stan code either way.
+[Point at the code block and read the argument list top to bottom.] This single function call is the entire modeling step -- there's no Stan code to write by hand. [Click through the bullets one at a time.] Emphasize the grouping: gen/loc/trait are always required, repl/reg/year are the three switches that determine which of the nine models gets fit (that's the very next slide), res.het is a modeling choice about residual variance, and iter/cores/chains are just computational effort. If someone asks about the `...` passthrough, mention `seed` for reproducibility and `adapt_delta` for convergence tuning as the two most commonly needed.
 </div>
 
 ## The full model catalog
@@ -391,11 +287,152 @@ Every combination is called the same way — just change `repl`, `reg`, `year` i
 </table>
 ```
 
-- `res.het` toggles homogeneous vs. heterogeneous residual variance across locations
 - Full equations for all nine: `?bayes_met` or the package site, Section 2
 
 <div class="notes">
-This slide is the reference card -- [say "you don't need to memorize this, it's here so you know where to look it up later"]. Point out the three color bands: green for the single mean model, blue for the four RCBD variants, purple for the four incomplete-block variants -- same colors we've used in every diagram so far, so the mapping should already feel familiar. If someone asks "what if I have a design that doesn't fit any of these nine", mention this is exactly what the res.het, iter, chains, and the `...` passthrough to rstan::sampling() are for -- there's room to customize beyond the nine presets.
+This slide is the reference card -- [say "you don't need to memorize this, it's here so you know where to look it up later"]. Point out the three color bands: green for the single mean model, blue for the four RCBD variants, purple for the four incomplete-block variants -- same colors we use in every diagram today, so the mapping should already feel familiar. If someone asks "what if I have a design that doesn't fit any of these nine", mention this is exactly what the res.het, iter, chains, and the `...` passthrough to rstan::sampling() are for -- there's room to customize beyond the nine presets.
+</div>
+
+## `extr_outs()`: checking the model fit
+
+```r
+outs = extr_outs(model = mod, probs = c(0.05, 0.95), verbose = TRUE)
+```
+
+Returns an object of class `extr` — a list with:
+
+::: {.incremental}
+- The **posterior distribution** of every model effect
+- Data **simulated** from the fitted model, for posterior predictive checks
+- The **maximum a posteriori (MAP)** value of each effect
+- **Variance components**, with highest posterior density (HPD) intervals
+- **Goodness-of-fit diagnostics**: Bayesian *p*-values, $\hat{R}$, WAIC2, effective sample size
+:::
+
+`plot(outs)` compares the empirical vs. simulated phenotype distributions — the closer the overlap, the more the model captured the real data.
+
+<div class="notes">
+Frame this as the "check your work" step before trusting any probability: we never go straight from bayes_met() to conclusions. [Click through the bullets one at a time.] The posterior distributions are the raw material for step three; the simulated data and diagnostics are what let us sanity-check the fit. [Point at the closing sentence about plot(outs).] In the tutorial, this is literally one line of code, and we'll look at exactly this empirical-vs-simulated plot together to decide whether we trust the model enough to move on.
+</div>
+
+## `prob_sup()`: the `probsup` object
+
+```r
+results = prob_sup(extr = outs, int = 0.2, increase = TRUE)
+```
+
+Returns an object of class `probsup` — **two lists**:
+
+```{mermaid}
+%%| fig-width: 9.5
+%%| fig-height: 3
+%%| echo: false
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 22, "htmlLabels": true, "nodeSpacing": 35, "rankSpacing": 45, "wrappingWidth": 240}}%%
+flowchart LR
+    P["prob_sup()"]:::green --> A["results$across<br/>whole trial network"]:::data
+    P --> W["results$within<br/>each environment"]:::amber
+    A --> A1["perfo · pair_perfo<br/>stabi · pair_stabi · joint"]:::data
+    W --> W1["perfo · pair_perfo"]:::amber
+    classDef green fill:#d9ede4,stroke:#1f6f54,stroke-width:2px,color:#123f30
+    classDef data fill:#dbe8f3,stroke:#3b6ea5,stroke-width:2px,color:#1a3a52
+    classDef amber fill:#fbe3c7,stroke:#b3611e,stroke-width:2px,color:#5c3413
+```
+
+- `results$across` — superior performance, pairwise performance, superior stability, pairwise stability, and joint probability, computed **across the whole trial network**
+- `results$within` — performance and pairwise performance, computed separately **within each individual environment**
+- Only one extra input is needed beyond the fitted model: the **selection intensity** (`int`)
+
+<div class="notes">
+This slide sets up the structure for everything that follows -- [point at the diagram] two lists hanging off one object, across and within. Mirror this explicitly to the package documentation: "this is exactly the probsup object you'll see in the site docs and in the tutorial." [Point at the two accessor bullets.] Emphasize that the next few slides are literally walking through the elements of results$across one at a time, then results$within -- so this diagram is the map for the rest of this section. Also stress the `int` argument: it's the only new piece of information the breeder has to supply, the selection intensity, e.g. top 20%.
+</div>
+
+## `results$across`: probability of superior performance
+
+Genotype $j$'s marginal effect (`results$across$perfo`):
+
+$$
+\Pr(\hat{g}_j \in \Omega \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} \in \Omega \mid y\right)
+$$
+
+Pairwise — head-to-head against a specific competitor or check cultivar (`results$across$pair_perfo`):
+
+$$
+\Pr(\hat{g}_j > \hat{g}_{j'} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} > \hat{g}_{j'}^{(s)} \mid y\right)
+$$
+
+*(flip the inequality to $<$ when selecting for a decreasing trait, e.g. plant height or disease severity)*
+
+<div class="notes">
+[Point at the formula on the left -- the first equation.] This is the formal version of the counting-game diagram from earlier: same S posterior draws, same indicator function, same division by S -- and it's what lands in results$across$perfo. [Point at the second formula.] The pairwise version answers a much more concrete breeding question -- "is my elite candidate actually better than the commercial check?" -- and lands in results$across$pair_perfo. Flag the footnote about flipping the inequality; it's a one-argument change in the R function (`increase = FALSE`) but easy to forget conceptually.
+</div>
+
+## `results$across`: probability of superior stability
+
+A genotype is "stable" (Shukla, 1972) when its genotype-by-environment interaction variance is **low** (`results$across$stabi`):
+
+$$
+\Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) \in \Omega \mid y\right]
+$$
+
+Pairwise stability — which of two genotypes is more consistent (`results$across$pair_stabi`):
+
+$$
+\Pr\left[\text{var}(\widehat{ge}_{jk}) < \text{var}(\widehat{ge}_{j'k}) \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) < \text{var}\left(\widehat{ge}_{j'k}^{(s)}\right) \mid y\right]
+$$
+
+<div class="notes">
+[Point at the stability definition at the top before moving to the formula.] Ground this before the math: stability here is *not* about high performance, it's about the genotype behaving the same way everywhere -- low genotype-by-environment interaction variance. Same counting recipe as performance, just applied to the variance component instead of the main effect, landing in results$across$stabi -- [point at var(ge_jk) in the formula] note that "belonging to Omega" here means having a variance small enough to be in the low-variance group, not a high value. The pairwise version at the bottom (results$across$pair_stabi) directly compares two genotypes' consistency.
+</div>
+
+## `results$across`: joint probability
+
+Assuming genotypic main effects and GEI variances are independent by model design (`results$across$joint`):
+
+$$
+\Pr\left[\hat{g}_j \in \Omega \,\cap\, \text{var}(\widehat{ge}_{jk}) \in \Omega\right] = \Pr(\hat{g}_j \in \Omega) \times \Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega\right]
+$$
+
+::: {.incremental}
+- Simply the **product** of the two probabilities from the previous slide
+- Rewards genotypes that are simultaneously **high-performing and dependable**
+- Rarely will the same genotype top every individual metric — this is the one that reconciles them
+:::
+
+<div class="notes">
+[Point at the formula -- it's just a multiplication, make that clear right away.] "This looks intimidating but it's literally just performance-probability times stability-probability." Because the model treats the genotypic main effect and the GxE variance as independent random quantities, the joint probability of two independent events is just their product -- no new machinery needed, and it's the last element of results$across. [Click through the bullets one at a time.] This is usually the number breeders care about most in a final recommendation decision, precisely because it's rare for the same genotype to win on every single metric -- this is the tie-breaker.
+</div>
+
+## `results$within`: performance in each environment
+
+Same logic as `results$across$perfo`, applied **locally** instead of across the whole trial network — useful for site-specific recommendations (`results$within$perfo`):
+
+$$
+\Pr(\hat{g}_{jk} \in \Omega_k \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} \in \Omega_k \mid y\right)
+$$
+
+Pairwise, within one environment (`results$within$pair_perfo`):
+
+$$
+\Pr(\hat{g}_{jk} > \hat{g}_{j'k} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} > \hat{g}_{j'k}^{(s)} \mid y\right)
+$$
+
+Both are computed **per environment** — one heatmap per location or region, not a single global number.
+
+<div class="notes">
+[Point at the subscript k in the formulas -- that's the only difference from the across-environment performance formulas we saw earlier.] The genotypic effect now includes the environment-specific deviation (g-hat-jk instead of g-hat-j), and Omega-k is the top slice *within* that one environment -- this is the results$within list, the second half of the probsup object from a few slides ago. Explain why this matters practically: a breeder recommending cultivars to growers in one specific region doesn't care about performance averaged across the whole trial network -- they care about performance right there. In the tutorial, this is what produces the heatmaps rather than the lollipop charts.
+</div>
+
+## Key takeaways
+
+::: {.incremental}
+1. Cultivar recommendation is a decision under **uncertainty** — GEI makes single-estimate rankings incomplete
+2. `ProbBreed` recasts that uncertainty as directly interpretable **probabilities**, from a Bayesian MET model's posterior
+3. One consistent input — the **selection intensity** — drives performance, stability, pairwise, and joint probabilities
+4. Three functions: `bayes_met()` → `extr_outs()` → `prob_sup()`
+:::
+
+<div class="notes">
+[Click through the items one at a time, pausing on each.] This is the summary slide -- resist the urge to re-explain everything, just land each point once. Don't linger on next steps here; the very next slide sets up exactly what we're about to run together.
 </div>
 
 ## Our working example: the `maize` dataset
@@ -426,122 +463,7 @@ Please have `R`, `ProbBreed`, and a working `rstan` toolchain ready — we switc
 :::
 
 <div class="notes">
-[Click through the bullets, give each a beat.] Introduce the dataset we'll actually run: real maize trial data from the original Dias et al. 2022 paper, provided by Embrapa Milho e Sorgo -- so this isn't a toy example, it's the dataset that motivated the method in the first place. Point out that this maps onto the IBD-with-regions box from two slides ago -- 16 locations, 5 regions, incomplete blocks, 2 reps. [Ask everyone to open their laptop now] and confirm ProbBreed and rstan are installed before moving on, since the next section of the talk (priors and formulas) sets up the theory we're about to see in the tutorial's real output.
-</div>
-
-## Model priors
-
-Priors follow **Dias *et al.* (2022)** — weakly informative, but never fully uninformative:
-
-$$
-x \sim N\left(0,\, S^{[x]}\right), \qquad \sigma \sim \text{HalfCauchy}\left(0,\, S^{[\sigma]}\right)
-$$
-
-where $x$ is any model effect except the residual, and $\sigma$ is the residual standard deviation. For heterogeneous-variance models (`res.het = TRUE`):
-
-$$
-\sigma_k \sim \text{HalfCauchy}\left(0,\, S^{[\sigma_k]}\right)
-$$
-
-The hyperprior on every scale parameter is itself data-driven:
-
-$$
-S^{[x]} \sim \text{HalfCauchy}(0,\, \phi), \qquad \phi = \max(y) \times 10
-$$
-
-<div class="notes">
-This is the "what's actually happening inside bayes_met()" slide -- take it a bit slower since it's the densest math of the talk. [Point at the first formula.] Every fixed and random effect gets a Normal(0, S) prior; every variance/SD term gets a Half-Cauchy, which is standard practice because it keeps variances non-negative while still being weakly informative. [Point at the second formula.] When residual variance is allowed to differ by location -- res.het = TRUE -- each location gets its own sigma_k with its own Half-Cauchy prior. [Point at the third formula, the most important one on this slide.] The key design choice is that the hyperparameter phi isn't a fixed number the user has to guess -- it scales with the data itself, ten times the maximum observed phenotype, which keeps the prior vague enough to let the data dominate while still bounding it away from being improper.
-</div>
-
-## Probability of superior performance
-
-Across environments — genotype $j$'s marginal effect:
-
-$$
-\Pr(\hat{g}_j \in \Omega \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} \in \Omega \mid y\right)
-$$
-
-Pairwise — head-to-head against a specific competitor or check cultivar:
-
-$$
-\Pr(\hat{g}_j > \hat{g}_{j'} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} > \hat{g}_{j'}^{(s)} \mid y\right)
-$$
-
-*(flip the inequality to $<$ when selecting for a decreasing trait, e.g. plant height or disease severity)*
-
-<div class="notes">
-[Point at the formula on the left -- the first equation.] This is the formal version of the counting-game diagram from earlier: same S posterior draws, same indicator function, same division by S. [Point at the second formula.] The pairwise version answers a much more concrete breeding question -- "is my elite candidate actually better than the commercial check?" -- by comparing the two genotypes' draws directly in every posterior sample, rather than each against the whole population. Flag the footnote about flipping the inequality; it's a one-argument change in the R function (`increase = FALSE`) but easy to forget conceptually.
-</div>
-
-## Probability of superior stability
-
-A genotype is "stable" (Shukla, 1972) when its genotype-by-environment interaction variance is **low**:
-
-$$
-\Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) \in \Omega \mid y\right]
-$$
-
-Pairwise stability — which of two genotypes is more consistent:
-
-$$
-\Pr\left[\text{var}(\widehat{ge}_{jk}) < \text{var}(\widehat{ge}_{j'k}) \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) < \text{var}\left(\widehat{ge}_{j'k}^{(s)}\right) \mid y\right]
-$$
-
-<div class="notes">
-[Point at the stability definition at the top before moving to the formula.] Ground this before the math: stability here is *not* about high performance, it's about the genotype behaving the same way everywhere -- low genotype-by-environment interaction variance. Same counting recipe as performance, just applied to the variance component instead of the main effect -- [point at var(ge_jk) in the formula] note that "belonging to Omega" here means having a variance small enough to be in the low-variance group, not a high value. The pairwise version at the bottom directly compares two genotypes' consistency, which is often what breeders actually want to know: "is line A more reliable than line B across our target region?"
-</div>
-
-## Joint probability of performance and stability
-
-Assuming genotypic main effects and GEI variances are independent by model design:
-
-$$
-\Pr\left[\hat{g}_j \in \Omega \,\cap\, \text{var}(\widehat{ge}_{jk}) \in \Omega\right] = \Pr(\hat{g}_j \in \Omega) \times \Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega\right]
-$$
-
-::: {.incremental}
-- Simply the **product** of the two probabilities from the previous slide
-- Rewards genotypes that are simultaneously **high-performing and dependable**
-- Rarely will the same genotype top every individual metric — this is the one that reconciles them
-:::
-
-<div class="notes">
-[Point at the formula -- it's just a multiplication, make that clear right away.] "This looks intimidating but it's literally just performance-probability times stability-probability." Because the model treats the genotypic main effect and the GxE variance as independent random quantities, the joint probability of two independent events is just their product -- no new machinery needed. [Click through the bullets one at a time.] This is usually the number breeders care about most in a final recommendation decision, precisely because it's rare for the same genotype to win on every single metric -- this is the tie-breaker.
-</div>
-
-## Within-environment results
-
-Same logic, applied **locally** instead of across the whole trial network — useful for site-specific recommendations:
-
-$$
-\Pr(\hat{g}_{jk} \in \Omega_k \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} \in \Omega_k \mid y\right)
-$$
-
-$$
-\Pr(\hat{g}_{jk} > \hat{g}_{j'k} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} > \hat{g}_{j'k}^{(s)} \mid y\right)
-$$
-
-Both are computed **per environment** — one heatmap per location or region, not a single global number.
-
-<div class="notes">
-[Point at the subscript k in the formulas -- that's the only difference from the "across" versions.] Everything on this slide is structurally identical to the across-environment formulas two slides ago, with one change: the genotypic effect now includes the environment-specific deviation (g-hat-jk instead of g-hat-j), and Omega-k is the top slice *within* that one environment. Explain why this matters practically: a breeder recommending cultivars to growers in one specific region doesn't care about performance averaged across the whole trial network -- they care about performance right there. In the tutorial, this is what produces the heatmaps rather than the lollipop charts.
-</div>
-
-## Key takeaways
-
-::: {.incremental}
-1. Cultivar recommendation is a decision under **uncertainty** — GEI makes single-estimate rankings incomplete
-2. `ProbBreed` recasts that uncertainty as directly interpretable **probabilities**, from a Bayesian MET model's posterior
-3. One consistent input — the **selection intensity** — drives performance, stability, pairwise, and joint probabilities
-4. Three functions: `bayes_met()` → `extr_outs()` → `prob_sup()`
-:::
-
-::: {.fragment}
-**Next:** continue with `hands_on_tutorial.qmd` — we fit `bayes_met()` on the `maize` dataset together.
-:::
-
-<div class="notes">
-[Click through the items one at a time, pausing on each.] This is the summary slide -- resist the urge to re-explain everything, just land each point once. Close by pointing everyone to the tutorial file and confirming they have R and ProbBreed ready, since that's the very next thing that happens after this slide.
+[Click through the bullets, give each a beat.] This is our closing bridge slide into the hands-on session: real maize trial data from the original Dias et al. 2022 paper, provided by Embrapa Milho e Sorgo -- so this isn't a toy example, it's the dataset that motivated the method in the first place. Point out that this maps onto the IBD-with-regions row from the model catalog earlier -- 16 locations, 5 regions, incomplete blocks, 2 reps. [Reveal the diagram fragment and walk through it left to right -- it's the same three-function pipeline from earlier, applied to this exact dataset.] [Reveal the final fragment and ask everyone to open their laptop now]; confirm ProbBreed and rstan are installed before moving to the tutorial file.
 </div>
 
 ## References
