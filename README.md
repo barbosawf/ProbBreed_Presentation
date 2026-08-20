@@ -10,8 +10,6 @@ A journal club presentation on **[ProbBreed](https://github.com/saulo-chaves/Pro
 | 💻 **Hands-on tutorial** (fitting `bayes_met()` on real data) | **[Open tutorial](https://barbosawf.github.io/ProbBreed_Presentation/hands_on_tutorial.html)** |
 | 🏠 Landing page with both links | **[barbosawf.github.io/ProbBreed_Presentation](https://barbosawf.github.io/ProbBreed_Presentation/)** |
 
-The slide deck is built with [Quarto reveal.js multiplex](https://quarto.org/docs/presentations/revealjs/presenting.html#multiplex): the link above is the audience copy, which mirrors the speaker's navigation live during the talk.
-
 ## Contents
 
 | File | Description |
@@ -23,7 +21,32 @@ The slide deck is built with [Quarto reveal.js multiplex](https://quarto.org/doc
 
 ## Rendering locally
 
-Requires [Quarto](https://quarto.org/docs/get-started/) and R with the [`ProbBreed`](https://github.com/saulo-chaves/ProbBreed) and `rstan` packages installed.
+Requires [Quarto](https://quarto.org/docs/get-started/) and R.
+
+### Installing the required R packages
+
+`ProbBreed` depends on `rstan`, which in turn requires a working C++ toolchain: **Rtools** on Windows, the **Xcode command-line tools** on macOS, or `build-essential` on Linux. Install that first, then, from an R console in the project directory:
+
+```r
+# ProbBreed pulls in rstan and its other dependencies automatically.
+# This can take a while the first time, since rstan compiles from source.
+if (!requireNamespace("ProbBreed", quietly = TRUE)) {
+  install.packages("ProbBreed")
+}
+
+# ProbBreed's plot methods are built on ggplot2
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+
+# Alternatively, the development version of ProbBreed from GitHub:
+# install.packages("remotes")
+# remotes::install_github("saulo-chaves/ProbBreed")
+```
+
+The `install-packages` chunk at the top of [`hands_on_tutorial.qmd`](hands_on_tutorial.qmd) runs this same check automatically, so it only re-installs when a package isn't already available.
+
+### Rendering the documents
 
 ```bash
 quarto render presentation_probbreed.qmd
