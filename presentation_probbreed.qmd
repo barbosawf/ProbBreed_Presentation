@@ -237,27 +237,22 @@ flowchart LR
 This is the "zoom out" slide -- after all the theory, ground it in three function calls. [Trace the arrow left to right with your finger or the laser pointer.] "Everything you just saw collapses into three R functions: fit, extract, compute." Mention that this is deliberately the whole pipeline -- no other steps required -- which is the accessibility contribution of the package relative to the original Dias et al. method, which required writing Stan code by hand. We're about to walk through all three steps in turn, starting with `bayes_met()` next.
 </div>
 
-## `bayes_met()`: the function and its parameters {.smaller}
+## `bayes_met()`: the function and its parameters
 
 ```r
 mod = bayes_met(
-  data    = MyData,
-  gen     = "Genotype",
-  loc     = "Location",
-  repl    = ...,      # NULL / 'Replicate' / c('Replicate','Block')
-  reg     = ...,      # NULL or 'Region'
-  year    = ...,      # NULL or 'Year'
-  res.het = TRUE,
-  trait   = "Phenotype",
-  iter    = 2000, cores = 2, chains = 4)
+  data = MyData, gen = "Genotype", loc = "Location",
+  repl = ..., reg = ..., year = ...,
+  res.het = TRUE, trait = "Phenotype",
+  iter = 2000, cores = 2, chains = 4)
 ```
 
 ::: {.incremental}
-- `gen`, `loc`, `trait` — required in every call: genotype, location, and response variable columns
-- `repl`, `reg`, `year` — the three switches that together select which of the **nine models** gets fit (next slide)
-- `res.het` — homogeneous (`FALSE`) vs. heterogeneous (`TRUE`) residual variance across locations
-- `iter` / `cores` / `chains` — MCMC effort; more is slower, but more reliable
-- Extra arguments pass straight through to `rstan::sampling()` (e.g. `seed`, `adapt_delta`)
+- `gen`, `loc`, `trait` — genotype, location, response columns
+- `repl`, `reg`, `year` — pick one of the **nine models** (next slide)
+- `res.het` — homogeneous vs. heterogeneous residual variance
+- `iter`, `cores`, `chains` — MCMC effort
+- `...` passes through to `rstan::sampling()` (`seed`, `adapt_delta`)
 :::
 
 <div class="notes">
@@ -296,7 +291,9 @@ This slide is the reference card -- [say "you don't need to memorize this, it's 
 ## `extr_outs()`: checking the model fit
 
 ```r
-outs = extr_outs(model = mod, probs = c(0.05, 0.95), verbose = TRUE)
+outs = extr_outs(
+  model = mod,
+  probs = c(0.05, 0.95), verbose = TRUE)
 ```
 
 Returns an object of class `extr` — a list with:
@@ -320,16 +317,18 @@ Frame this as the "check your work" step before trusting any probability: we nev
 ## `prob_sup()`: the `probsup` object
 
 ```r
-results = prob_sup(extr = outs, int = 0.2, increase = TRUE)
+results = prob_sup(
+  extr = outs,
+  int = 0.2, increase = TRUE)
 ```
 
 Returns an object of class `probsup` — **two lists**:
 
 ```{mermaid}
 %%| fig-width: 9.5
-%%| fig-height: 3
+%%| fig-height: 2.6
 %%| echo: false
-%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 22, "htmlLabels": true, "nodeSpacing": 35, "rankSpacing": 45, "wrappingWidth": 240}}%%
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 18, "htmlLabels": true, "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 240}}%%
 flowchart LR
     P["prob_sup()"]:::green --> A["results$across<br/>whole trial network"]:::data
     P --> W["results$within<br/>each environment"]:::amber
@@ -340,7 +339,7 @@ flowchart LR
     classDef amber fill:#fbe3c7,stroke:#b3611e,stroke-width:2px,color:#5c3413
 ```
 
-::: {style="font-size: 0.8em;"}
+::: {style="font-size: 0.75em; margin-top: -0.3em;"}
 - `results$across` — superior performance, pairwise performance, superior stability, pairwise stability, and joint probability, computed **across the whole trial network**
 - `results$within` — performance and pairwise performance, computed separately **within each individual environment**
 - Only one extra input is needed beyond the fitted model: the **selection intensity** (`int`)

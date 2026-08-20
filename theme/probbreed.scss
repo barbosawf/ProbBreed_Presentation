@@ -293,6 +293,49 @@ $code-block-border-color: #e08e45 !default;
 #why-bayesian ul li {
   margin-bottom: 0.05em;
 }
+
+// bayes_met() slide: bigger code + bullet text as requested. The code
+// was also reformatted to fewer, denser lines (2-3 params per line
+// instead of one) specifically to make room for the larger font without
+// scrolling.
+#bayes_met-the-function-and-its-parameters div.sourceCode,
+#bayes_met-the-function-and-its-parameters pre.sourceCode,
+#bayes_met-the-function-and-its-parameters code {
+  font-size: 1.05em !important;
+  line-height: 1.35;
+}
+#bayes_met-the-function-and-its-parameters ul {
+  font-size: 1.05em;
+  margin-top: 0.5em;
+}
+#bayes_met-the-function-and-its-parameters ul li {
+  margin-bottom: 0.3em;
+}
+
+// extr_outs() / prob_sup() slides: bigger font specifically for the code
+// box showing the function call. Both slides have comfortable headroom.
+#extr_outs-checking-the-model-fit div.sourceCode,
+#extr_outs-checking-the-model-fit pre.sourceCode,
+#extr_outs-checking-the-model-fit code,
+#prob_sup-the-probsup-object div.sourceCode,
+#prob_sup-the-probsup-object pre.sourceCode,
+#prob_sup-the-probsup-object code {
+  font-size: 1em !important;
+  line-height: 1.4;
+}
+// This slide has a code block + diagram + bullets all stacked, so a
+// little extra tightening is needed on top of the bigger code font to
+// avoid a ~40px overflow.
+#prob_sup-the-probsup-object h2 {
+  margin-bottom: 0.25em;
+}
+#prob_sup-the-probsup-object div.sourceCode {
+  padding: 0.4em 0.8em;
+  margin-bottom: 0.3em;
+}
+#prob_sup-the-probsup-object > p {
+  margin: 0.3em 0;
+}
 // Zebra-striped rows for readability. Uses the same blue tint pair as
 // the RCBD rows in the model-catalog table (slide 12) so the palette is
 // consistent across the deck -- and picked for clearly visible contrast
