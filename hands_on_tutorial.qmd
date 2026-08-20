@@ -1,0 +1,491 @@
+---
+title: "ProbBreed in Practice"
+subtitle: "A Hands-On Tutorial for Cultivar Recommendation in Multi-Environment Trials"
+author:
+  - name: "Wagner Faria Barbosa"
+  - name: "Rhoda Ayanfeoluwa Ojo"
+date: today
+date-format: long
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    toc-location: left
+    number-sections: true
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    df-print: paged
+    fig-align: center
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  # `eval` is left at its default (true) so this document is fully
+  # reproducible end to end. Bayesian model fitting is the slow step;
+  # see the "Live-workshop timing" callout in Section 2 for a faster
+  # configuration if we are short on time during the session.
+---
+
+```{=html}
+<style>
+/* Justified body text, as requested for this document */
+body { text-align: justify; }
+h1, h2, h3, h4, .toc-title { text-align: left; }
+caption, .figure-caption { text-align: center; }
+</style>
+```
+
+# Introduction
+
+This tutorial is the practical companion to our talk on the `ProbBreed` package. While the slide deck (`presentation_probbreed.qmd`) covered the theory behind the Bayesian model family and the probabilities the package computes, here we **run the full pipeline together**, step by step, on a real multi-environment trial (MET) dataset.
+
+The goal is that everyone types (or runs) the same code at the same time as the instructors, so that by the end of the session you have:
+
+1. A fitted Bayesian MET model,
+2. A validated set of posterior outputs, and
+3. A complete set of probability-based genotype recommendations —
+
+ready to be adapted to your own breeding datasets.
+
+::: {.callout-note}
+## Reference material
+This tutorial follows the workflow described in the `ProbBreed` package documentation (<https://saulo-chaves.github.io/ProbBreed_site/>) and in Chaves *et al.* (2024, *G3*), starting from the example dataset onward. See the References section at the end for full citations.
+:::
+
+# Setup
+
+## Installing and loading the package
+
+Run this once per machine. `ProbBreed` depends on `rstan`, which in turn requires a working C++ toolchain (Rtools on Windows, Xcode command-line tools on macOS, or `build-essential` on Linux). If `rstan` is already installed and working on your machine, installing `ProbBreed` itself is quick.
+
+```{r}
+#| label: install-packages
+
+# Installing ProbBreed compiles rstan's C++ backend, which can take a long
+# time. This check installs it only if it isn't already available, so
+# re-running this chunk (or re-knitting this document) never re-triggers
+# that slow install unnecessarily.
+if (!requireNamespace("ProbBreed", quietly = TRUE)) {
+  install.packages("ProbBreed")
+}
+
+# Alternatively, the development version from GitHub:
+# if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
+# remotes::install_github("saulo-chaves/ProbBreed")
+```
+
+```{r}
+#| label: load-packages
+
+library(ProbBreed)   # the star of the show
+library(ggplot2)      # ProbBreed's plot methods are built on ggplot2
+```
+
+::: {.callout-tip}
+## Live-workshop timing
+Fitting a full Bayesian model with `iter = 4000` and `chains = 4` (the settings used in the package's own documentation) can take several minutes. If we are tight on time during the session, follow along using the **reduced settings** flagged below (`iter = 1000`, `chains = 2`, `cores = 2`) — the resulting probabilities will be a little noisier, but the workflow is identical, and you can re-run with the full settings afterward at home. If it is still too slow on your laptop, also run the optional **data-filtering** chunk in the next section to fit on fewer locations.
+:::
+
+# The `maize` Dataset
+
+`ProbBreed` ships with a real MET dataset, used originally by Dias *et al.* (2022) to propose the underlying method. Let's explore it before modeling anything.
+
+```{r}
+#| label: load-data
+
+data("maize", package = "ProbBreed")
+str(maize)
+```
+
+```{r}
+#| label: peek-data
+
+head(maize)
+```
+
+```{r}
+#| label: design-summary
+
+# A quick summary of the trial network
+cat("Genotypes (hybrids + checks):", length(unique(maize$Hybrid)), "\n")
+cat("Locations:                   ", length(unique(maize$Location)), "\n")
+cat("Regions (mega-environments): ", length(unique(maize$Region)), "\n")
+```
+
+**Design at a glance**
+
+- **36 genotypes**: 32 experimental single-cross hybrids and 4 commercial checks
+- **16 locations**, nested within **5 regions** (mega-environments)
+- **Incomplete block design (IBD)**: block size of 6, with 2 replicates per trial
+- Trait of interest: grain yield, column `GY`
+- Data kindly provided by Embrapa Milho e Sorgo
+
+This is a realistic, moderately unbalanced MET — a good stress test for the probabilistic framework.
+
+## Speeding up the live run (optional)
+
+Bayesian model runtime scales with both the number of MCMC iterations/chains *and* the size of the dataset. If Step 1 below is taking too long during the session, filter the data down before fitting: we keep 2 locations per region (10 of the 16 locations), which preserves the full region structure but noticeably cuts runtime. Skip this chunk entirely to use the full dataset.
+
+```{r}
+#| label: filter-data-for-speed
+
+set.seed(2026)
+locs_subset <- unlist(lapply(split(maize$Location, maize$Region), function(locs) {
+  sample(unique(locs), size = min(2, length(unique(locs))))
+}))
+
+maize_fast <- maize[maize$Location %in% locs_subset, ]
+
+cat("Locations kept: ", length(unique(maize_fast$Location)),
+    "of", length(unique(maize$Location)), "\n")
+cat("Rows kept:      ", nrow(maize_fast), "of", nrow(maize), "\n")
+```
+
+# Step 1 — Fit the Bayesian MET Model
+
+The first step of any `ProbBreed` analysis is `bayes_met()`. Because our data includes replicate and block information, region information, but no year effect, we use the **incomplete-block-design model with locations and regions**.
+
+```{r}
+#| label: fit-model-full
+#| eval: false
+
+# Full-fidelity model, as used in the package documentation.
+# This is what you should use for a real analysis outside the workshop.
+mod <- bayes_met(
+  data    = maize,
+  gen     = "Hybrid",     # column with genotype identifiers
+  loc     = "Location",   # column with location identifiers
+  repl    = c("Rep", "Block"),  # incomplete block design: replicate + block
+  reg     = "Region",     # column with region (mega-environment) identifiers
+  year    = NULL,         # no year effect in this dataset
+  res.het = TRUE,         # heterogeneous residual variance across locations
+  trait   = "GY",         # response variable: grain yield
+  iter    = 4000,
+  cores   = 4,
+  chains  = 4,
+  seed    = 2026          # passed through to rstan::sampling() for reproducibility
+)
+```
+
+```{r}
+#| label: fit-model-fast
+#| cache: true
+
+# Reduced-fidelity model, tuned for a live workshop timeslot: fewer
+# iterations/chains, and (if the previous chunk was run) fewer locations.
+# Same model structure throughout -> faster, somewhat noisier posteriors.
+maize_run <- if (exists("maize_fast")) maize_fast else maize
+
+mod <- bayes_met(
+  data    = maize_run,
+  gen     = "Hybrid",
+  loc     = "Location",
+  repl    = c("Rep", "Block"),
+  reg     = "Region",
+  year    = NULL,
+  res.het = TRUE,
+  trait   = "GY",
+  iter    = 1000,
+  cores   = 2,
+  chains  = 2,
+  seed    = 2026
+)
+```
+
+::: {.callout-important}
+## About convergence warnings
+`rstan` is conservative and may print warnings about divergent transitions or effective sample size — this is common, especially with the reduced iteration count above, and does not automatically invalidate the model. We check this properly in the next step with `extr_outs()`, rather than reacting to warnings alone.
+:::
+
+# Step 2 — Extract Outputs and Check Model Fit
+
+`extr_outs()` extracts the posterior distributions, variance components, and goodness-of-fit diagnostics from the fitted model.
+
+```{r}
+#| label: extract-outputs
+
+outs <- extr_outs(
+  model   = mod,
+  probs   = c(0.05, 0.95),  # bounds for the highest posterior density (HPD) interval
+  verbose = TRUE
+)
+```
+
+## Variance components
+
+```{r}
+#| label: variance-components
+
+outs$variances
+```
+
+This table shows how much variation is attributed to each source — genotype, location, region, the genotype-by-location and genotype-by-region interactions, and residual error per environment. The genotype-by-location interaction variance in particular is what feeds the **stability** probabilities in Step 3.
+
+## Goodness-of-fit diagnostics
+
+```{r}
+#| label: ppcheck
+
+outs$ppcheck
+```
+
+A few things worth checking here:
+
+- **Bayesian p-values** (`p.val_*`): ideally close to 0.5; values very near 0 or 1 suggest the model struggles to reproduce that aspect of the data
+- **`mean_Rhat`**: should be close to 1 (commonly, $\hat{R} < 1.05$ is considered acceptable) — this indicates the chains converged to the same distribution
+- **`WAIC2`**: useful for comparing *alternative* models on the same data (lower is better); not meaningful in isolation
+- **`Eff_sample_size`**: the effective sample size relative to the total draws — low values suggest we may want more iterations
+
+## Visual diagnostics
+
+```{r}
+#| label: plot-density
+#| fig-cap: "Posterior distributions of the model effects"
+
+plot(outs, category = "density")
+```
+
+```{r}
+#| label: plot-histogram
+#| fig-cap: "Posterior distributions of the model effects (histograms)"
+
+plot(outs, category = "histogram")
+```
+
+The most important diagnostic plot compares the **empirical** phenotypic distribution to phenotypes **simulated** from the fitted model — the more the two densities overlap, the better the model captures the real data:
+
+```{r}
+#| label: plot-ppcheck
+#| fig-cap: "Empirical vs. model-simulated phenotype distributions"
+
+plot(outs)
+```
+
+::: {.callout-tip}
+If `bayes_met()` raised convergence warnings but these diagnostics look reasonable (Bayesian p-values away from the extremes, $\hat{R}$ close to 1, strong empirical/simulated overlap), it is generally safe to proceed to Step 3.
+:::
+
+# Step 3 — Compute the Probabilities
+
+This is where the probabilistic framework pays off. `prob_sup()` takes the extracted posterior (`outs`) and a **selection intensity** and returns every probability discussed in the theory talk.
+
+```{r}
+#| label: compute-probabilities
+
+results <- prob_sup(
+  extr     = outs,
+  int      = 0.2,     # selection intensity: top 20% of genotypes
+  increase = TRUE,    # we want to INCREASE grain yield (use FALSE for traits like disease severity)
+  save.df  = FALSE,   # set TRUE to also write the probability tables to the working directory as .csv
+  verbose  = FALSE
+)
+```
+
+The result, `results`, is a `probsup` object containing two lists:
+
+- `results$across` — probabilities computed **across** environments (general adaptability)
+- `results$within` — probabilities computed **within** individual environments (local recommendation)
+
+We will explore both.
+
+## Across-environment results
+
+### Posterior genotypic effects (HPD)
+
+The highest posterior density (HPD) interval of each genotype's main effect gives us a first, uncertainty-aware overview of performance:
+
+```{r}
+#| label: hpd-table
+
+head(results$across$g_hpd)
+```
+
+```{r}
+#| label: hpd-plot
+#| fig-cap: "Caterpillar plot of the posterior genotypic main effects (HPD intervals)"
+#| fig-height: 8
+
+plot(results, category = "hpd")
+```
+
+Genotypes are sorted by their posterior mean; the interval width reflects how uncertain that estimate still is — useful context before we collapse everything into a single probability.
+
+### Probability of superior performance
+
+```{r}
+#| label: performance-table
+
+head(results$across$perfo)
+```
+
+```{r}
+#| label: performance-plot
+#| fig-cap: "Probability of superior performance across environments"
+
+plot(results)
+```
+
+This ranks genotypes by their probability of belonging to the top 20% (our chosen `int`) across the whole trial network — directly answering *"how much can I trust this genotype's overall performance?"*
+
+### Pairwise probability of superior performance
+
+Suppose one of the experimental hybrids is a promising candidate, and we want to know whether it truly outperforms a commercial check. Pick two genotype IDs present in your `results$across$perfo` table (adjust the codes below to genotypes from your own run) and compare them directly:
+
+```{r}
+#| label: pairwise-performance
+
+# Full pairwise matrix (probability of the row-genotype's column exceeding
+# every other genotype)
+results$across$pair_perfo[1:5, 1:5]
+
+# Direct query: replace "G1" and "G2" with an experimental hybrid and a
+# commercial check from your own `maize` run
+# results$across$pair_perfo["G1", "G2"]
+```
+
+```{r}
+#| label: pairwise-performance-plot
+#| fig-cap: "Heatmap of pairwise probabilities of superior performance"
+#| fig-width: 9
+#| fig-height: 9
+
+plot(results, category = "pair_perfo")
+```
+
+Reading the heatmap: a cell's color is the probability that the genotype on the **x-axis** outperforms the genotype on the **y-axis**.
+
+### Probability of superior stability
+
+Recall from the theory talk: stability here means a *low* genotype-by-environment interaction variance. `ProbBreed` reports this both at the location level (`gl`) and the region level (`gm`):
+
+```{r}
+#| label: stability-tables
+
+head(results$across$stabi$gl)  # stability across locations
+head(results$across$stabi$gm)  # stability across regions
+```
+
+```{r}
+#| label: stability-plot
+#| fig-cap: "Probability of superior stability (location and region levels)"
+
+plot(results, category = "stabi")
+```
+
+### Pairwise probability of superior stability
+
+```{r}
+#| label: pairwise-stability
+
+results$across$pair_stabi$gl[1:5, 1:5]  # location-level pairwise stability
+results$across$pair_stabi$gm[1:5, 1:5]  # region-level pairwise stability
+```
+
+```{r}
+#| label: pairwise-stability-plot
+#| fig-cap: "Heatmap of pairwise probabilities of superior stability"
+#| fig-width: 9
+#| fig-height: 9
+
+plot(results, category = "pair_stabi")
+```
+
+### Joint probability of superior performance and stability
+
+The metric that usually matters most for a final recommendation call — a genotype that is simultaneously high-performing **and** dependable:
+
+```{r}
+#| label: joint-table
+
+head(results$across$joint)
+```
+
+```{r}
+#| label: joint-plot
+#| fig-cap: "Joint probability of superior performance and stability"
+
+plot(results, category = "joint")
+```
+
+::: {.callout-important}
+## Discussion prompt
+Look at the genotype that ranks #1 in `perfo` (raw performance). Does it also rank #1 in `joint`? If not, why might that be — and which genotype would *you* recommend to a grower, and why?
+:::
+
+## Within-environment results
+
+Across-environment probabilities describe general adaptability. But breeders often need **local** recommendations for a specific location or region. That is what `results$within` provides.
+
+### Probability of superior performance within environments
+
+```{r}
+#| label: within-performance
+
+head(results$within$perfo$gl)  # within-location
+```
+
+```{r}
+#| label: within-performance-plot
+#| fig-cap: "Heatmap of within-environment probabilities of superior performance"
+#| fig-width: 10
+#| fig-height: 9
+
+plot(results, category = "perfo", level = "within")
+```
+
+Grey cells indicate a genotype that was not evaluated in that particular environment — expected, given the incomplete block design of this trial network.
+
+### Pairwise probability of superior performance within environments
+
+Because this comparison is specific to each environment, `plot()` returns a **list of plots** (one per location/region) rather than a single figure. Store it in an object before plotting:
+
+```{r}
+#| label: within-pairwise
+#| eval: false
+
+pairsupwithin <- plot(results, category = "pair_perfo", level = "within")
+
+# Example: inspect a single location or region
+pairsupwithin$gl$E1   # pairwise comparisons within location "E1"
+pairsupwithin$gm$R1   # pairwise comparisons within region "R1"
+```
+
+::: {.callout-note}
+Substitute `"E1"`/`"R1"` above with the actual location/region codes present in your fitted `maize` model (check `levels(factor(maize$Location))` and `levels(factor(maize$Region))`).
+:::
+
+# Wrap-Up: The Questions We Can Now Answer
+
+Having walked through the full pipeline, we are equipped to answer exactly the kind of questions that motivate cultivar recommendation in practice:
+
+1. What is the **risk** of recommending a given selection candidate?
+2. What is the **probability** that a candidate performs well across — or within — environments?
+3. Is a candidate genotype **better than a commercial check**, and with what confidence?
+4. How likely is a genotype to perform **similarly** across the target population of environments?
+5. Is a candidate **more stable** than the check cultivar?
+6. Which genotype has both **superior and dependable** performance across environments?
+
+# Practice Exercise
+
+Now it's your turn. Using the fitted `results` object:
+
+1. Identify the genotype with the highest **joint** probability across **regions** (`results$across$joint`, filtered to `level == "Region"`).
+2. Pick any commercial check in the `maize` data and find the experimental hybrid most likely to outperform it, using `results$across$pair_perfo`.
+3. Re-run Step 3 with `int = 0.1` (a stricter, top-10% selection intensity). How much does the ranking in `results$across$perfo` change?
+
+```{r}
+#| label: exercise-scaffold
+#| eval: false
+
+# Your code here
+```
+
+# References
+
+- Chaves, S. F. S., Krause, M. D., Dias, L. A. S., Garcia, A. A. F., & Dias, K. O. G. (2024). ProbBreed: a novel tool for calculating the risk of cultivar recommendation in multienvironment trials. *G3: Genes\|Genomes\|Genetics*, 14(3), jkae013. <https://doi.org/10.1093/g3journal/jkae013>
+- Dias, K. O. G., Santos, J. P. R., Krause, M. D., Piepho, H.-P., Guimarães, L. J. M., Pastina, M. M., & Garcia, A. A. F. (2022). Leveraging probability concepts for cultivar recommendation in multi-environment trials. *Theoretical and Applied Genetics*, 135(4), 1385–1399. <https://doi.org/10.1007/s00122-022-04041-y>
+- Package documentation: <https://saulo-chaves.github.io/ProbBreed_site/>
+- Source code: <https://github.com/saulo-chaves/ProbBreed>
