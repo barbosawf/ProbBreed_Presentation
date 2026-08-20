@@ -105,7 +105,7 @@
     code span.vs { color: #bf0303; } /* VerbatimString */
     code span.wa { color: #bf0303; } /* Warning */
   </style>
-  <link rel="stylesheet" href="presentation_probbreed_files/libs/revealjs/dist/theme/quarto-31c786662078fd2b560e76fcbf235024.css">
+  <link rel="stylesheet" href="presentation_probbreed_files/libs/revealjs/dist/theme/quarto-1ecd8bc29ba4834414058820148197fb.css">
   <link href="presentation_probbreed_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="presentation_probbreed_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="presentation_probbreed_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -528,10 +528,15 @@ flowchart LR
 <section id="bayes_met-the-function-and-its-parameters" class="slide level2">
 <h2><code>bayes_met()</code>: the function and its parameters</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb1-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> MyData, <span class="at">gen =</span> <span class="st">"Genotype"</span>, <span class="at">loc =</span> <span class="st">"Location"</span>,</span>
-<span id="cb1-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl =</span> ..., <span class="at">reg =</span> ..., <span class="at">year =</span> ...,</span>
-<span id="cb1-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>, <span class="at">trait =</span> <span class="st">"Phenotype"</span>,</span>
-<span id="cb1-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data    =</span> MyData,</span>
+<span id="cb1-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen     =</span> <span class="st">"Genotype"</span>,</span>
+<span id="cb1-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc     =</span> <span class="st">"Location"</span>,</span>
+<span id="cb1-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl    =</span> ...,</span>
+<span id="cb1-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg     =</span> ...,</span>
+<span id="cb1-7"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">year    =</span> ...,</span>
+<span id="cb1-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait   =</span> <span class="st">"Phenotype"</span>,</span>
+<span id="cb1-10"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter    =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
 <li class="fragment"><code>gen</code>, <code>loc</code>, <code>trait</code> — genotype, location, response columns</li>
 <li class="fragment"><code>repl</code>, <code>reg</code>, <code>year</code> — pick one of the <strong>nine models</strong> (next slide)</li>
@@ -970,7 +975,7 @@ flowchart LR
 'jumpToSlide': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true},
-'multiplex': {"secret":null,"id":"b9b225c19b1e784cb30cd8f1872b26a645111efcbe3622627277c02770a9dde7","url":"https://multiplex.up.railway.app/"},
+'multiplex': {"secret":null,"id":"84c40a5ae8ac27b612c7807e1b07049bfef0c61385931a32729187d3a17583f2","url":"https://multiplex.up.railway.app/"},
 'smaller': false,
  
         // Display controls in the bottom right corner
