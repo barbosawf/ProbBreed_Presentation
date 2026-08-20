@@ -28,15 +28,19 @@ Requires [Quarto](https://quarto.org/docs/get-started/) and R.
 `ProbBreed` depends on `rstan`, which in turn requires a working C++ toolchain: **Rtools** on Windows, the **Xcode command-line tools** on macOS, or `build-essential` on Linux. Install that first, then, from an R console in the project directory:
 
 ```r
-# ProbBreed pulls in rstan and its other dependencies automatically.
-# This can take a while the first time, since rstan compiles from source.
+# ProbBreed is on CRAN, and installing it automatically resolves and
+# installs every package it Imports -- rstan, Rcpp, RcppParallel,
+# rstantools, ggplot2, etc. -- so nothing besides ProbBreed itself
+# needs to be installed separately. This can take a while the first
+# time, since rstan compiles from source.
 if (!requireNamespace("ProbBreed", quietly = TRUE)) {
   install.packages("ProbBreed")
 }
 
-# ProbBreed's plot methods are built on ggplot2
-if (!requireNamespace("ggplot2", quietly = TRUE)) {
-  install.packages("ggplot2")
+# tidyverse (includes ggplot2, dplyr, readr, etc.) is handy for the
+# data wrangling used throughout the tutorial.
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
 }
 
 # Alternatively, the development version of ProbBreed from GitHub:
