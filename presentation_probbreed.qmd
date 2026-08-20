@@ -309,7 +309,9 @@ Returns an object of class `extr` — a list with:
 - **Goodness-of-fit diagnostics**: Bayesian *p*-values, $\hat{R}$, WAIC2, effective sample size
 :::
 
+::: {.fragment}
 `plot(outs)` compares the empirical vs. simulated phenotype distributions — the closer the overlap, the more the model captured the real data.
+:::
 
 <div class="notes">
 Frame this as the "check your work" step before trusting any probability: we never go straight from bayes_met() to conclusions. [Click through the bullets one at a time.] The posterior distributions are the raw material for step three; the simulated data and diagnostics are what let us sanity-check the fit. [Point at the closing sentence about plot(outs).] In the tutorial, this is literally one line of code, and we'll look at exactly this empirical-vs-simulated plot together to decide whether we trust the model enough to move on.
@@ -338,9 +340,11 @@ flowchart LR
     classDef amber fill:#fbe3c7,stroke:#b3611e,stroke-width:2px,color:#5c3413
 ```
 
+::: {style="font-size: 0.8em;"}
 - `results$across` — superior performance, pairwise performance, superior stability, pairwise stability, and joint probability, computed **across the whole trial network**
 - `results$within` — performance and pairwise performance, computed separately **within each individual environment**
 - Only one extra input is needed beyond the fitted model: the **selection intensity** (`int`)
+:::
 
 <div class="notes">
 This slide sets up the structure for everything that follows -- [point at the diagram] two lists hanging off one object, across and within. Mirror this explicitly to the package documentation: "this is exactly the probsup object you'll see in the site docs and in the tutorial." [Point at the two accessor bullets.] Emphasize that the next few slides are literally walking through the elements of results$across one at a time, then results$within -- so this diagram is the map for the rest of this section. Also stress the `int` argument: it's the only new piece of information the breeder has to supply, the selection intensity, e.g. top 20%.
