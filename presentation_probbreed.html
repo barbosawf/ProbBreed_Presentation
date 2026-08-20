@@ -372,7 +372,7 @@ Rhoda Ayanfeoluwa Ojo
 <li>Payoff: the <strong>entire posterior</strong> of every genotypic effect feeds directly into probability calculations</li>
 </ul>
 <aside class="notes">
-<p>[Give the table a moment to be read before you talk over it.] Walk row by row: “Output” – frequentist gives you one number per genotype, Bayesian gives you a whole distribution of plausible values. “Uncertainty” – ratios and rankings are notoriously hard to get confidence intervals for in the frequentist world; here it falls out for free. “Risk of recommendation” is the row that matters most to breeders – literally not computable without a posterior. Finish on the bottom bullets: mention Stan/NUTS only briefly (no need to teach HMC here), and flag that the prior hyperparameter is <em>data-driven</em>, not something the user has to tune – we’ll come back to the exact priors in a few slides.</p>
+<p>[Give the table a moment to be read before you talk over it.] Walk row by row: “Output” – frequentist gives you one number per genotype, Bayesian gives you a whole distribution of plausible values. “Uncertainty” – ratios and rankings are notoriously hard to get confidence intervals for in the frequentist world; here it falls out for free. “Risk of recommendation” is the row that matters most to breeders – literally not computable without a posterior. Finish on the bottom bullets: mention Stan/NUTS only briefly (no need to teach HMC here), and flag that the prior hyperparameter is <em>data-driven</em>, not something the user has to tune.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -512,7 +512,7 @@ flowchart LR
 </tbody>
 </table>
 <aside class="notes">
-<p>This is the “zoom out” slide – after all the theory, ground it in three function calls. [Trace the arrow left to right with your finger or the laser pointer.] “Everything you just saw collapses into three R functions: fit, extract, compute.” Mention that this is deliberately the whole pipeline – no other steps required – which is the accessibility contribution of the package relative to the original Dias et al.&nbsp;method, which required writing Stan code by hand. We’re about to spend the next several slides just on step one, <code>bayes_met()</code>, because that’s where most of the modeling decisions live.</p>
+<p>This is the “zoom out” slide – after all the theory, ground it in three function calls. [Trace the arrow left to right with your finger or the laser pointer.] “Everything you just saw collapses into three R functions: fit, extract, compute.” Mention that this is deliberately the whole pipeline – no other steps required – which is the accessibility contribution of the package relative to the original Dias et al.&nbsp;method, which required writing Stan code by hand. We’re about to walk through all three steps in turn, starting with <code>bayes_met()</code> next.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -525,139 +525,27 @@ flowchart LR
           display:block!important;
       }</style></aside>
 </section>
-<section id="choosing-a-model-without-year-effect" class="slide level2">
-<h2>Choosing a model: without year effect</h2>
-<div class="columns">
-<div class="column" style="width:46%;">
+<section id="bayes_met-the-function-and-its-parameters" class="slide level2 smaller">
+<h2><code>bayes_met()</code>: the function and its parameters</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb1-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> MyData,</span>
-<span id="cb1-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen  =</span> <span class="st">"Genotype"</span>,</span>
-<span id="cb1-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc  =</span> <span class="st">"Location"</span>,</span>
-<span id="cb1-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl =</span> ...,     <span class="co"># NULL / 'Replicate' /</span></span>
-<span id="cb1-6"><a href="" aria-hidden="true" tabindex="-1"></a>                  <span class="co"># c('Replicate','Block')</span></span>
-<span id="cb1-7"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg  =</span> ...,     <span class="co"># NULL or 'Region'</span></span>
-<span id="cb1-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="cn">NULL</span>,    <span class="co"># &lt;- no year effect</span></span>
-<span id="cb1-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-10"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait =</span> <span class="st">"Phenotype"</span>,</span>
-<span id="cb1-11"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div><div class="column" style="width:4%;">
-
-</div><div class="column" style="width:50%;">
-<div class="model-scheme">
-  <div class="scheme-branch">
-    <div class="scheme-header header-neutral">reg = NULL</div>
-    <div class="scheme-leaf leaf-green">Entry-mean<br><code>repl = NULL</code></div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-  <div class="scheme-branch">
-    <div class="scheme-header header-amber">reg = 'Region'</div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-</div>
-</div></div>
-<p>Five models live here: the entry-mean model <strong>only</strong> exists in this branch (<code>repl</code>, <code>reg</code>, and <code>year</code> all <code>NULL</code> together).</p>
+<span id="cb1-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data    =</span> MyData,</span>
+<span id="cb1-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen     =</span> <span class="st">"Genotype"</span>,</span>
+<span id="cb1-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc     =</span> <span class="st">"Location"</span>,</span>
+<span id="cb1-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl    =</span> ...,      <span class="co"># NULL / 'Replicate' / c('Replicate','Block')</span></span>
+<span id="cb1-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg     =</span> ...,      <span class="co"># NULL or 'Region'</span></span>
+<span id="cb1-7"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">year    =</span> ...,      <span class="co"># NULL or 'Year'</span></span>
+<span id="cb1-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb1-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait   =</span> <span class="st">"Phenotype"</span>,</span>
+<span id="cb1-10"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter    =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<ul>
+<li class="fragment"><code>gen</code>, <code>loc</code>, <code>trait</code> — required in every call: genotype, location, and response variable columns</li>
+<li class="fragment"><code>repl</code>, <code>reg</code>, <code>year</code> — the three switches that together select which of the <strong>nine models</strong> gets fit (next slide)</li>
+<li class="fragment"><code>res.het</code> — homogeneous (<code>FALSE</code>) vs.&nbsp;heterogeneous (<code>TRUE</code>) residual variance across locations</li>
+<li class="fragment"><code>iter</code> / <code>cores</code> / <code>chains</code> — MCMC effort; more is slower, but more reliable</li>
+<li class="fragment">Extra arguments pass straight through to <code>rstan::sampling()</code> (e.g.&nbsp;<code>seed</code>, <code>adapt_delta</code>)</li>
+</ul>
 <aside class="notes">
-<p>[Point at the code on the left first.] Walk through the generic call: gen, loc, and trait always required; repl/reg/year are the three switches. [Then point at the diagram on the right.] “When there’s no year effect, bayes_met gives you five models: split first by whether you supply regions, then by your experimental design – entry-mean if you only have adjusted means, RCBD if you have replicates, IBD if you have incomplete blocks.” Stress the callout at the bottom: entry-mean is special, it’s the <em>only</em> model where repl, reg, and year are all NULL simultaneously – you can’t combine entry-mean with regions or years.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="choosing-a-model-with-year-effect" class="slide level2">
-<h2>Choosing a model: with year effect</h2>
-<div class="columns">
-<div class="column" style="width:46%;">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb2-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> MyData,</span>
-<span id="cb2-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen  =</span> <span class="st">"Genotype"</span>,</span>
-<span id="cb2-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc  =</span> <span class="st">"Location"</span>,</span>
-<span id="cb2-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl =</span> ...,     <span class="co"># 'Replicate' /</span></span>
-<span id="cb2-6"><a href="" aria-hidden="true" tabindex="-1"></a>                  <span class="co"># c('Replicate','Block')</span></span>
-<span id="cb2-7"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg  =</span> ...,     <span class="co"># NULL or 'Region'</span></span>
-<span id="cb2-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">"Year"</span>,  <span class="co"># &lt;- year effect included</span></span>
-<span id="cb2-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb2-10"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait =</span> <span class="st">"Phenotype"</span>,</span>
-<span id="cb2-11"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div><div class="column" style="width:4%;">
-
-</div><div class="column" style="width:50%;">
-<div class="model-scheme">
-  <div class="scheme-branch">
-    <div class="scheme-header header-neutral">reg = NULL</div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-  <div class="scheme-branch">
-    <div class="scheme-header header-amber">reg = 'Region'</div>
-    <div class="scheme-leaf leaf-blue">RCBD<br><code>repl = 'Replicate'</code></div>
-    <div class="scheme-leaf leaf-purple">IBD<br><code>repl = c('Repl','Block')</code></div>
-  </div>
-</div>
-</div></div>
-<p>Four models live here — no entry-mean variant, since a year effect always implies replicated data.</p>
-<aside class="notes">
-<p>Same structure as the previous slide, so you can move faster here – [say “same idea, one switch flips”] and point at <code>year = "Year"</code> in the code. [Point at the diagram.] “With a year effect, entry-mean drops out entirely – you always need RCBD or IBD, with or without regions – four combinations total.” If someone asks why: multi-year data structurally requires some notion of replication across time, which entry-mean’s adjusted-means-only design doesn’t support. Combined with the previous slide, that’s all nine models bayes_met() can fit.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="example-without-year-effect" class="slide level2 big-code">
-<h2>Example: without year effect</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb3-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> MyData,</span>
-<span id="cb3-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen =</span> <span class="st">"Genotype"</span>,</span>
-<span id="cb3-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="st">"Location"</span>,</span>
-<span id="cb3-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl =</span> <span class="st">"Block"</span>,</span>
-<span id="cb3-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg =</span> <span class="st">"Region"</span>,</span>
-<span id="cb3-7"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="cn">NULL</span>,</span>
-<span id="cb3-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb3-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait =</span> <span class="st">"Phenotype"</span>,</span>
-<span id="cb3-10"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<aside class="notes">
-<p>This slide is intentionally just one code block, full size, nothing else competing for attention. [Read the code aloud, line by line.] This is the RCBD-with-regions model: replicated data, no year information, and regions declared. Mention that this is taken directly from the package documentation, so it’s exactly the syntax they’ll find in <code>?bayes_met</code> and on the package website if they want to look it up later.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="example-with-year-effect" class="slide level2 big-code">
-<h2>Example: with year effect</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb4-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> MyData,</span>
-<span id="cb4-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen =</span> <span class="st">"Genotype"</span>,</span>
-<span id="cb4-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc =</span> <span class="st">"Location"</span>,</span>
-<span id="cb4-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl =</span> <span class="st">"Block"</span>,</span>
-<span id="cb4-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg =</span> <span class="st">"Region"</span>,</span>
-<span id="cb4-7"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="st">'Year'</span>,</span>
-<span id="cb4-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb4-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait =</span> <span class="st">"Phenotype"</span>,</span>
-<span id="cb4-10"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<aside class="notes">
-<p>[Compare side by side with the previous slide – if possible, flip back one slide briefly to show the contrast.] Only one argument changed: <code>year = 'Year'</code> instead of <code>NULL</code>. Emphasize how little the user has to think about here – the same five arguments (repl, reg, year, res.het, trait) fully determine which of the nine models gets fit, and the package handles the underlying Stan code either way.</p>
+<p>[Point at the code block and read the argument list top to bottom.] This single function call is the entire modeling step – there’s no Stan code to write by hand. [Click through the bullets one at a time.] Emphasize the grouping: gen/loc/trait are always required, repl/reg/year are the three switches that determine which of the nine models gets fit (that’s the very next slide), res.het is a modeling choice about residual variance, and iter/cores/chains are just computational effort. If someone asks about the <code>...</code> passthrough, mention <code>seed</code> for reproducibility and <code>adapt_delta</code> for convergence tuning as the two most commonly needed.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -750,11 +638,200 @@ flowchart LR
 </tbody>
 </table>
 <ul>
-<li><code>res.het</code> toggles homogeneous vs.&nbsp;heterogeneous residual variance across locations</li>
 <li>Full equations for all nine: <code>?bayes_met</code> or the package site, Section 2</li>
 </ul>
 <aside class="notes">
-<p>This slide is the reference card – [say “you don’t need to memorize this, it’s here so you know where to look it up later”]. Point out the three color bands: green for the single mean model, blue for the four RCBD variants, purple for the four incomplete-block variants – same colors we’ve used in every diagram so far, so the mapping should already feel familiar. If someone asks “what if I have a design that doesn’t fit any of these nine”, mention this is exactly what the res.het, iter, chains, and the <code>...</code> passthrough to rstan::sampling() are for – there’s room to customize beyond the nine presets.</p>
+<p>This slide is the reference card – [say “you don’t need to memorize this, it’s here so you know where to look it up later”]. Point out the three color bands: green for the single mean model, blue for the four RCBD variants, purple for the four incomplete-block variants – same colors we use in every diagram today, so the mapping should already feel familiar. If someone asks “what if I have a design that doesn’t fit any of these nine”, mention this is exactly what the res.het, iter, chains, and the <code>...</code> passthrough to rstan::sampling() are for – there’s room to customize beyond the nine presets.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="extr_outs-checking-the-model-fit" class="slide level2">
+<h2><code>extr_outs()</code>: checking the model fit</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="" aria-hidden="true" tabindex="-1"></a>outs <span class="ot">=</span> <span class="fu">extr_outs</span>(<span class="at">model =</span> mod, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>), <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Returns an object of class <code>extr</code> — a list with:</p>
+<ul>
+<li class="fragment">The <strong>posterior distribution</strong> of every model effect</li>
+<li class="fragment">Data <strong>simulated</strong> from the fitted model, for posterior predictive checks</li>
+<li class="fragment">The <strong>maximum a posteriori (MAP)</strong> value of each effect</li>
+<li class="fragment"><strong>Variance components</strong>, with highest posterior density (HPD) intervals</li>
+<li class="fragment"><strong>Goodness-of-fit diagnostics</strong>: Bayesian <em>p</em>-values, <span class="math inline">\(\hat{R}\)</span>, WAIC2, effective sample size</li>
+</ul>
+<p><code>plot(outs)</code> compares the empirical vs.&nbsp;simulated phenotype distributions — the closer the overlap, the more the model captured the real data.</p>
+<aside class="notes">
+<p>Frame this as the “check your work” step before trusting any probability: we never go straight from bayes_met() to conclusions. [Click through the bullets one at a time.] The posterior distributions are the raw material for step three; the simulated data and diagnostics are what let us sanity-check the fit. [Point at the closing sentence about plot(outs).] In the tutorial, this is literally one line of code, and we’ll look at exactly this empirical-vs-simulated plot together to decide whether we trust the model enough to move on.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="prob_sup-the-probsup-object" class="slide level2">
+<h2><code>prob_sup()</code>: the <code>probsup</code> object</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="" aria-hidden="true" tabindex="-1"></a>results <span class="ot">=</span> <span class="fu">prob_sup</span>(<span class="at">extr =</span> outs, <span class="at">int =</span> <span class="fl">0.2</span>, <span class="at">increase =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Returns an object of class <code>probsup</code> — <strong>two lists</strong>:</p>
+<div class="cell" data-reveal="true" data-fig-width="9.5" data-fig-height="3" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 22, "htmlLabels": true, "nodeSpacing": 35, "rankSpacing": 45, "wrappingWidth": 240}}%%
+flowchart LR
+    P["prob_sup()"]:::green --&gt; A["results$across&lt;br/&gt;whole trial network"]:::data
+    P --&gt; W["results$within&lt;br/&gt;each environment"]:::amber
+    A --&gt; A1["perfo · pair_perfo&lt;br/&gt;stabi · pair_stabi · joint"]:::data
+    W --&gt; W1["perfo · pair_perfo"]:::amber
+    classDef green fill:#d9ede4,stroke:#1f6f54,stroke-width:2px,color:#123f30
+    classDef data fill:#dbe8f3,stroke:#3b6ea5,stroke-width:2px,color:#1a3a52
+    classDef amber fill:#fbe3c7,stroke:#b3611e,stroke-width:2px,color:#5c3413
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<ul>
+<li><code>results$across</code> — superior performance, pairwise performance, superior stability, pairwise stability, and joint probability, computed <strong>across the whole trial network</strong></li>
+<li><code>results$within</code> — performance and pairwise performance, computed separately <strong>within each individual environment</strong></li>
+<li>Only one extra input is needed beyond the fitted model: the <strong>selection intensity</strong> (<code>int</code>)</li>
+</ul>
+<aside class="notes">
+<p>This slide sets up the structure for everything that follows – [point at the diagram] two lists hanging off one object, across and within. Mirror this explicitly to the package documentation: “this is exactly the probsup object you’ll see in the site docs and in the tutorial.” [Point at the two accessor bullets.] Emphasize that the next few slides are literally walking through the elements of results<span class="math inline">\(across one at a time, then results\)</span>within – so this diagram is the map for the rest of this section. Also stress the <code>int</code> argument: it’s the only new piece of information the breeder has to supply, the selection intensity, e.g.&nbsp;top 20%.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="resultsacross-probability-of-superior-performance" class="slide level2">
+<h2><code>results$across</code>: probability of superior performance</h2>
+<p>Genotype <span class="math inline">\(j\)</span>’s marginal effect (<code>results$across$perfo</code>):</p>
+<p><span class="math display">\[
+\Pr(\hat{g}_j \in \Omega \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} \in \Omega \mid y\right)
+\]</span></p>
+<p>Pairwise — head-to-head against a specific competitor or check cultivar (<code>results$across$pair_perfo</code>):</p>
+<p><span class="math display">\[
+\Pr(\hat{g}_j &gt; \hat{g}_{j'} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} &gt; \hat{g}_{j'}^{(s)} \mid y\right)
+\]</span></p>
+<p><em>(flip the inequality to <span class="math inline">\(&lt;\)</span> when selecting for a decreasing trait, e.g.&nbsp;plant height or disease severity)</em></p>
+<aside class="notes">
+<p>[Point at the formula on the left – the first equation.] This is the formal version of the counting-game diagram from earlier: same S posterior draws, same indicator function, same division by S – and it’s what lands in results<span class="math inline">\(across\)</span>perfo. [Point at the second formula.] The pairwise version answers a much more concrete breeding question – “is my elite candidate actually better than the commercial check?” – and lands in results<span class="math inline">\(across\)</span>pair_perfo. Flag the footnote about flipping the inequality; it’s a one-argument change in the R function (<code>increase = FALSE</code>) but easy to forget conceptually.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="resultsacross-probability-of-superior-stability" class="slide level2">
+<h2><code>results$across</code>: probability of superior stability</h2>
+<p>A genotype is “stable” (Shukla, 1972) when its genotype-by-environment interaction variance is <strong>low</strong> (<code>results$across$stabi</code>):</p>
+<p><span class="math display">\[
+\Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) \in \Omega \mid y\right]
+\]</span></p>
+<p>Pairwise stability — which of two genotypes is more consistent (<code>results$across$pair_stabi</code>):</p>
+<p><span class="math display">\[
+\Pr\left[\text{var}(\widehat{ge}_{jk}) &lt; \text{var}(\widehat{ge}_{j'k}) \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) &lt; \text{var}\left(\widehat{ge}_{j'k}^{(s)}\right) \mid y\right]
+\]</span></p>
+<aside class="notes">
+<p>[Point at the stability definition at the top before moving to the formula.] Ground this before the math: stability here is <em>not</em> about high performance, it’s about the genotype behaving the same way everywhere – low genotype-by-environment interaction variance. Same counting recipe as performance, just applied to the variance component instead of the main effect, landing in results<span class="math inline">\(across\)</span>stabi – [point at var(ge_jk) in the formula] note that “belonging to Omega” here means having a variance small enough to be in the low-variance group, not a high value. The pairwise version at the bottom (results<span class="math inline">\(across\)</span>pair_stabi) directly compares two genotypes’ consistency.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="resultsacross-joint-probability" class="slide level2">
+<h2><code>results$across</code>: joint probability</h2>
+<p>Assuming genotypic main effects and GEI variances are independent by model design (<code>results$across$joint</code>):</p>
+<p><span class="math display">\[
+\Pr\left[\hat{g}_j \in \Omega \,\cap\, \text{var}(\widehat{ge}_{jk}) \in \Omega\right] = \Pr(\hat{g}_j \in \Omega) \times \Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega\right]
+\]</span></p>
+<ul>
+<li class="fragment">Simply the <strong>product</strong> of the two probabilities from the previous slide</li>
+<li class="fragment">Rewards genotypes that are simultaneously <strong>high-performing and dependable</strong></li>
+<li class="fragment">Rarely will the same genotype top every individual metric — this is the one that reconciles them</li>
+</ul>
+<aside class="notes">
+<p>[Point at the formula – it’s just a multiplication, make that clear right away.] “This looks intimidating but it’s literally just performance-probability times stability-probability.” Because the model treats the genotypic main effect and the GxE variance as independent random quantities, the joint probability of two independent events is just their product – no new machinery needed, and it’s the last element of results$across. [Click through the bullets one at a time.] This is usually the number breeders care about most in a final recommendation decision, precisely because it’s rare for the same genotype to win on every single metric – this is the tie-breaker.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="resultswithin-performance-in-each-environment" class="slide level2">
+<h2><code>results$within</code>: performance in each environment</h2>
+<p>Same logic as <code>results$across$perfo</code>, applied <strong>locally</strong> instead of across the whole trial network — useful for site-specific recommendations (<code>results$within$perfo</code>):</p>
+<p><span class="math display">\[
+\Pr(\hat{g}_{jk} \in \Omega_k \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} \in \Omega_k \mid y\right)
+\]</span></p>
+<p>Pairwise, within one environment (<code>results$within$pair_perfo</code>):</p>
+<p><span class="math display">\[
+\Pr(\hat{g}_{jk} &gt; \hat{g}_{j'k} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} &gt; \hat{g}_{j'k}^{(s)} \mid y\right)
+\]</span></p>
+<p>Both are computed <strong>per environment</strong> — one heatmap per location or region, not a single global number.</p>
+<aside class="notes">
+<p>[Point at the subscript k in the formulas – that’s the only difference from the across-environment performance formulas we saw earlier.] The genotypic effect now includes the environment-specific deviation (g-hat-jk instead of g-hat-j), and Omega-k is the top slice <em>within</em> that one environment – this is the results$within list, the second half of the probsup object from a few slides ago. Explain why this matters practically: a breeder recommending cultivars to growers in one specific region doesn’t care about performance averaged across the whole trial network – they care about performance right there. In the tutorial, this is what produces the heatmaps rather than the lollipop charts.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="key-takeaways" class="slide level2 scrollable">
+<h2>Key takeaways</h2>
+<ol type="1">
+<li class="fragment">Cultivar recommendation is a decision under <strong>uncertainty</strong> — GEI makes single-estimate rankings incomplete</li>
+<li class="fragment"><code>ProbBreed</code> recasts that uncertainty as directly interpretable <strong>probabilities</strong>, from a Bayesian MET model’s posterior</li>
+<li class="fragment">One consistent input — the <strong>selection intensity</strong> — drives performance, stability, pairwise, and joint probabilities</li>
+<li class="fragment">Three functions: <code>bayes_met()</code> → <code>extr_outs()</code> → <code>prob_sup()</code></li>
+</ol>
+<aside class="notes">
+<p>[Click through the items one at a time, pausing on each.] This is the summary slide – resist the urge to re-explain everything, just land each point once. Don’t linger on next steps here; the very next slide sets up exactly what we’re about to run together.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -798,158 +875,7 @@ flowchart LR
 <p>Please have <code>R</code>, <code>ProbBreed</code>, and a working <code>rstan</code> toolchain ready — we switch to the tutorial next.</p>
 </div>
 <aside class="notes">
-<p>[Click through the bullets, give each a beat.] Introduce the dataset we’ll actually run: real maize trial data from the original Dias et al.&nbsp;2022 paper, provided by Embrapa Milho e Sorgo – so this isn’t a toy example, it’s the dataset that motivated the method in the first place. Point out that this maps onto the IBD-with-regions box from two slides ago – 16 locations, 5 regions, incomplete blocks, 2 reps. [Ask everyone to open their laptop now] and confirm ProbBreed and rstan are installed before moving on, since the next section of the talk (priors and formulas) sets up the theory we’re about to see in the tutorial’s real output.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="model-priors" class="slide level2">
-<h2>Model priors</h2>
-<p>Priors follow <strong>Dias <em>et al.</em> (2022)</strong> — weakly informative, but never fully uninformative:</p>
-<p><span class="math display">\[
-x \sim N\left(0,\, S^{[x]}\right), \qquad \sigma \sim \text{HalfCauchy}\left(0,\, S^{[\sigma]}\right)
-\]</span></p>
-<p>where <span class="math inline">\(x\)</span> is any model effect except the residual, and <span class="math inline">\(\sigma\)</span> is the residual standard deviation. For heterogeneous-variance models (<code>res.het = TRUE</code>):</p>
-<p><span class="math display">\[
-\sigma_k \sim \text{HalfCauchy}\left(0,\, S^{[\sigma_k]}\right)
-\]</span></p>
-<p>The hyperprior on every scale parameter is itself data-driven:</p>
-<p><span class="math display">\[
-S^{[x]} \sim \text{HalfCauchy}(0,\, \phi), \qquad \phi = \max(y) \times 10
-\]</span></p>
-<aside class="notes">
-<p>This is the “what’s actually happening inside bayes_met()” slide – take it a bit slower since it’s the densest math of the talk. [Point at the first formula.] Every fixed and random effect gets a Normal(0, S) prior; every variance/SD term gets a Half-Cauchy, which is standard practice because it keeps variances non-negative while still being weakly informative. [Point at the second formula.] When residual variance is allowed to differ by location – res.het = TRUE – each location gets its own sigma_k with its own Half-Cauchy prior. [Point at the third formula, the most important one on this slide.] The key design choice is that the hyperparameter phi isn’t a fixed number the user has to guess – it scales with the data itself, ten times the maximum observed phenotype, which keeps the prior vague enough to let the data dominate while still bounding it away from being improper.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="probability-of-superior-performance" class="slide level2">
-<h2>Probability of superior performance</h2>
-<p>Across environments — genotype <span class="math inline">\(j\)</span>’s marginal effect:</p>
-<p><span class="math display">\[
-\Pr(\hat{g}_j \in \Omega \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} \in \Omega \mid y\right)
-\]</span></p>
-<p>Pairwise — head-to-head against a specific competitor or check cultivar:</p>
-<p><span class="math display">\[
-\Pr(\hat{g}_j &gt; \hat{g}_{j'} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_j^{(s)} &gt; \hat{g}_{j'}^{(s)} \mid y\right)
-\]</span></p>
-<p><em>(flip the inequality to <span class="math inline">\(&lt;\)</span> when selecting for a decreasing trait, e.g.&nbsp;plant height or disease severity)</em></p>
-<aside class="notes">
-<p>[Point at the formula on the left – the first equation.] This is the formal version of the counting-game diagram from earlier: same S posterior draws, same indicator function, same division by S. [Point at the second formula.] The pairwise version answers a much more concrete breeding question – “is my elite candidate actually better than the commercial check?” – by comparing the two genotypes’ draws directly in every posterior sample, rather than each against the whole population. Flag the footnote about flipping the inequality; it’s a one-argument change in the R function (<code>increase = FALSE</code>) but easy to forget conceptually.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="probability-of-superior-stability" class="slide level2">
-<h2>Probability of superior stability</h2>
-<p>A genotype is “stable” (Shukla, 1972) when its genotype-by-environment interaction variance is <strong>low</strong>:</p>
-<p><span class="math display">\[
-\Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) \in \Omega \mid y\right]
-\]</span></p>
-<p>Pairwise stability — which of two genotypes is more consistent:</p>
-<p><span class="math display">\[
-\Pr\left[\text{var}(\widehat{ge}_{jk}) &lt; \text{var}(\widehat{ge}_{j'k}) \mid y\right] = \frac{1}{S}\sum_{s=1}^{S} I\left[\text{var}\left(\widehat{ge}_{jk}^{(s)}\right) &lt; \text{var}\left(\widehat{ge}_{j'k}^{(s)}\right) \mid y\right]
-\]</span></p>
-<aside class="notes">
-<p>[Point at the stability definition at the top before moving to the formula.] Ground this before the math: stability here is <em>not</em> about high performance, it’s about the genotype behaving the same way everywhere – low genotype-by-environment interaction variance. Same counting recipe as performance, just applied to the variance component instead of the main effect – [point at var(ge_jk) in the formula] note that “belonging to Omega” here means having a variance small enough to be in the low-variance group, not a high value. The pairwise version at the bottom directly compares two genotypes’ consistency, which is often what breeders actually want to know: “is line A more reliable than line B across our target region?”</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="joint-probability-of-performance-and-stability" class="slide level2">
-<h2>Joint probability of performance and stability</h2>
-<p>Assuming genotypic main effects and GEI variances are independent by model design:</p>
-<p><span class="math display">\[
-\Pr\left[\hat{g}_j \in \Omega \,\cap\, \text{var}(\widehat{ge}_{jk}) \in \Omega\right] = \Pr(\hat{g}_j \in \Omega) \times \Pr\left[\text{var}(\widehat{ge}_{jk}) \in \Omega\right]
-\]</span></p>
-<ul>
-<li class="fragment">Simply the <strong>product</strong> of the two probabilities from the previous slide</li>
-<li class="fragment">Rewards genotypes that are simultaneously <strong>high-performing and dependable</strong></li>
-<li class="fragment">Rarely will the same genotype top every individual metric — this is the one that reconciles them</li>
-</ul>
-<aside class="notes">
-<p>[Point at the formula – it’s just a multiplication, make that clear right away.] “This looks intimidating but it’s literally just performance-probability times stability-probability.” Because the model treats the genotypic main effect and the GxE variance as independent random quantities, the joint probability of two independent events is just their product – no new machinery needed. [Click through the bullets one at a time.] This is usually the number breeders care about most in a final recommendation decision, precisely because it’s rare for the same genotype to win on every single metric – this is the tie-breaker.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="within-environment-results" class="slide level2">
-<h2>Within-environment results</h2>
-<p>Same logic, applied <strong>locally</strong> instead of across the whole trial network — useful for site-specific recommendations:</p>
-<p><span class="math display">\[
-\Pr(\hat{g}_{jk} \in \Omega_k \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} \in \Omega_k \mid y\right)
-\]</span></p>
-<p><span class="math display">\[
-\Pr(\hat{g}_{jk} &gt; \hat{g}_{j'k} \mid y) = \frac{1}{S}\sum_{s=1}^{S} I\left(\hat{g}_{jk}^{(s)} &gt; \hat{g}_{j'k}^{(s)} \mid y\right)
-\]</span></p>
-<p>Both are computed <strong>per environment</strong> — one heatmap per location or region, not a single global number.</p>
-<aside class="notes">
-<p>[Point at the subscript k in the formulas – that’s the only difference from the “across” versions.] Everything on this slide is structurally identical to the across-environment formulas two slides ago, with one change: the genotypic effect now includes the environment-specific deviation (g-hat-jk instead of g-hat-j), and Omega-k is the top slice <em>within</em> that one environment. Explain why this matters practically: a breeder recommending cultivars to growers in one specific region doesn’t care about performance averaged across the whole trial network – they care about performance right there. In the tutorial, this is what produces the heatmaps rather than the lollipop charts.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section id="key-takeaways" class="slide level2 scrollable">
-<h2>Key takeaways</h2>
-<ol type="1">
-<li class="fragment">Cultivar recommendation is a decision under <strong>uncertainty</strong> — GEI makes single-estimate rankings incomplete</li>
-<li class="fragment"><code>ProbBreed</code> recasts that uncertainty as directly interpretable <strong>probabilities</strong>, from a Bayesian MET model’s posterior</li>
-<li class="fragment">One consistent input — the <strong>selection intensity</strong> — drives performance, stability, pairwise, and joint probabilities</li>
-<li class="fragment">Three functions: <code>bayes_met()</code> → <code>extr_outs()</code> → <code>prob_sup()</code></li>
-</ol>
-<div class="fragment">
-<p><strong>Next:</strong> continue with <code>hands_on_tutorial.qmd</code> — we fit <code>bayes_met()</code> on the <code>maize</code> dataset together.</p>
-</div>
-<aside class="notes">
-<p>[Click through the items one at a time, pausing on each.] This is the summary slide – resist the urge to re-explain everything, just land each point once. Close by pointing everyone to the tutorial file and confirming they have R and ProbBreed ready, since that’s the very next thing that happens after this slide.</p>
+<p>[Click through the bullets, give each a beat.] This is our closing bridge slide into the hands-on session: real maize trial data from the original Dias et al.&nbsp;2022 paper, provided by Embrapa Milho e Sorgo – so this isn’t a toy example, it’s the dataset that motivated the method in the first place. Point out that this maps onto the IBD-with-regions row from the model catalog earlier – 16 locations, 5 regions, incomplete blocks, 2 reps. [Reveal the diagram fragment and walk through it left to right – it’s the same three-function pipeline from earlier, applied to this exact dataset.] [Reveal the final fragment and ask everyone to open their laptop now]; confirm ProbBreed and rstan are installed before moving to the tutorial file.</p>
 <style type="text/css">
         span.MJX_Assistive_MathML {
           position:absolute!important;
@@ -1041,7 +967,7 @@ S^{[x]} \sim \text{HalfCauchy}(0,\, \phi), \qquad \phi = \max(y) \times 10
 'jumpToSlide': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true},
-'multiplex': {"secret":null,"id":"f352e1e57a8fc9b9f6e273a2085b9bc8a979f36c5f0f33fb23ba0c95cfeb5513","url":"https://multiplex.up.railway.app/"},
+'multiplex': {"secret":null,"id":"75a5a7794d6adecf7c5762d2b592df9ea217f790d4f58b3a6ee40ae1e4f6ca66","url":"https://multiplex.up.railway.app/"},
 'smaller': false,
  
         // Display controls in the bottom right corner
