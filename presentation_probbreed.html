@@ -105,7 +105,7 @@
     code span.vs { color: #bf0303; } /* VerbatimString */
     code span.wa { color: #bf0303; } /* Warning */
   </style>
-  <link rel="stylesheet" href="presentation_probbreed_files/libs/revealjs/dist/theme/quarto-cea23687403b87efa08cb79219af0b7d.css">
+  <link rel="stylesheet" href="presentation_probbreed_files/libs/revealjs/dist/theme/quarto-31c786662078fd2b560e76fcbf235024.css">
   <link href="presentation_probbreed_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="presentation_probbreed_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="presentation_probbreed_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -525,24 +525,19 @@ flowchart LR
           display:block!important;
       }</style></aside>
 </section>
-<section id="bayes_met-the-function-and-its-parameters" class="slide level2 smaller">
+<section id="bayes_met-the-function-and-its-parameters" class="slide level2">
 <h2><code>bayes_met()</code>: the function and its parameters</h2>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">=</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb1-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data    =</span> MyData,</span>
-<span id="cb1-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen     =</span> <span class="st">"Genotype"</span>,</span>
-<span id="cb1-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc     =</span> <span class="st">"Location"</span>,</span>
-<span id="cb1-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl    =</span> ...,      <span class="co"># NULL / 'Replicate' / c('Replicate','Block')</span></span>
-<span id="cb1-6"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg     =</span> ...,      <span class="co"># NULL or 'Region'</span></span>
-<span id="cb1-7"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">year    =</span> ...,      <span class="co"># NULL or 'Year'</span></span>
-<span id="cb1-8"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb1-9"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait   =</span> <span class="st">"Phenotype"</span>,</span>
-<span id="cb1-10"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter    =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> MyData, <span class="at">gen =</span> <span class="st">"Genotype"</span>, <span class="at">loc =</span> <span class="st">"Location"</span>,</span>
+<span id="cb1-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl =</span> ..., <span class="at">reg =</span> ..., <span class="at">year =</span> ...,</span>
+<span id="cb1-4"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>, <span class="at">trait =</span> <span class="st">"Phenotype"</span>,</span>
+<span id="cb1-5"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter =</span> <span class="dv">2000</span>, <span class="at">cores =</span> <span class="dv">2</span>, <span class="at">chains =</span> <span class="dv">4</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <ul>
-<li class="fragment"><code>gen</code>, <code>loc</code>, <code>trait</code> — required in every call: genotype, location, and response variable columns</li>
-<li class="fragment"><code>repl</code>, <code>reg</code>, <code>year</code> — the three switches that together select which of the <strong>nine models</strong> gets fit (next slide)</li>
-<li class="fragment"><code>res.het</code> — homogeneous (<code>FALSE</code>) vs.&nbsp;heterogeneous (<code>TRUE</code>) residual variance across locations</li>
-<li class="fragment"><code>iter</code> / <code>cores</code> / <code>chains</code> — MCMC effort; more is slower, but more reliable</li>
-<li class="fragment">Extra arguments pass straight through to <code>rstan::sampling()</code> (e.g.&nbsp;<code>seed</code>, <code>adapt_delta</code>)</li>
+<li class="fragment"><code>gen</code>, <code>loc</code>, <code>trait</code> — genotype, location, response columns</li>
+<li class="fragment"><code>repl</code>, <code>reg</code>, <code>year</code> — pick one of the <strong>nine models</strong> (next slide)</li>
+<li class="fragment"><code>res.het</code> — homogeneous vs.&nbsp;heterogeneous residual variance</li>
+<li class="fragment"><code>iter</code>, <code>cores</code>, <code>chains</code> — MCMC effort</li>
+<li class="fragment"><code>...</code> passes through to <code>rstan::sampling()</code> (<code>seed</code>, <code>adapt_delta</code>)</li>
 </ul>
 <aside class="notes">
 <p>[Point at the code block and read the argument list top to bottom.] This single function call is the entire modeling step – there’s no Stan code to write by hand. [Click through the bullets one at a time.] Emphasize the grouping: gen/loc/trait are always required, repl/reg/year are the three switches that determine which of the nine models gets fit (that’s the very next slide), res.het is a modeling choice about residual variance, and iter/cores/chains are just computational effort. If someone asks about the <code>...</code> passthrough, mention <code>seed</code> for reproducibility and <code>adapt_delta</code> for convergence tuning as the two most commonly needed.</p>
@@ -656,7 +651,9 @@ flowchart LR
 </section>
 <section id="extr_outs-checking-the-model-fit" class="slide level2">
 <h2><code>extr_outs()</code>: checking the model fit</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="" aria-hidden="true" tabindex="-1"></a>outs <span class="ot">=</span> <span class="fu">extr_outs</span>(<span class="at">model =</span> mod, <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>), <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="" aria-hidden="true" tabindex="-1"></a>outs <span class="ot">=</span> <span class="fu">extr_outs</span>(</span>
+<span id="cb2-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> mod,</span>
+<span id="cb2-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">probs =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>), <span class="at">verbose =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Returns an object of class <code>extr</code> — a list with:</p>
 <ul>
 <li class="fragment">The <strong>posterior distribution</strong> of every model effect</li>
@@ -684,14 +681,16 @@ flowchart LR
 </section>
 <section id="prob_sup-the-probsup-object" class="slide level2">
 <h2><code>prob_sup()</code>: the <code>probsup</code> object</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="" aria-hidden="true" tabindex="-1"></a>results <span class="ot">=</span> <span class="fu">prob_sup</span>(<span class="at">extr =</span> outs, <span class="at">int =</span> <span class="fl">0.2</span>, <span class="at">increase =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="" aria-hidden="true" tabindex="-1"></a>results <span class="ot">=</span> <span class="fu">prob_sup</span>(</span>
+<span id="cb3-2"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">extr =</span> outs,</span>
+<span id="cb3-3"><a href="" aria-hidden="true" tabindex="-1"></a>  <span class="at">int =</span> <span class="fl">0.2</span>, <span class="at">increase =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Returns an object of class <code>probsup</code> — <strong>two lists</strong>:</p>
-<div class="cell" data-reveal="true" data-fig-width="9.5" data-fig-height="3" data-layout-align="default">
+<div class="cell" data-reveal="true" data-fig-width="9.5" data-fig-height="2.6" data-layout-align="default">
 <div class="cell-output-display">
 <div>
 <p></p><figure class=""><p></p>
 <div>
-<pre class="mermaid mermaid-js">%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 22, "htmlLabels": true, "nodeSpacing": 35, "rankSpacing": 45, "wrappingWidth": 240}}%%
+<pre class="mermaid mermaid-js">%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 18, "htmlLabels": true, "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 240}}%%
 flowchart LR
     P["prob_sup()"]:::green --&gt; A["results$across&lt;br/&gt;whole trial network"]:::data
     P --&gt; W["results$within&lt;br/&gt;each environment"]:::amber
@@ -706,7 +705,7 @@ flowchart LR
 </div>
 </div>
 </div>
-<div style="font-size: 0.8em;">
+<div style="font-size: 0.75em; margin-top: -0.3em;">
 <ul>
 <li><code>results$across</code> — superior performance, pairwise performance, superior stability, pairwise stability, and joint probability, computed <strong>across the whole trial network</strong></li>
 <li><code>results$within</code> — performance and pairwise performance, computed separately <strong>within each individual environment</strong></li>
@@ -971,7 +970,7 @@ flowchart LR
 'jumpToSlide': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true},
-'multiplex': {"secret":null,"id":"f9f1df8f7483261ca514453e5115df58d7b444b93cd81485ef4ec4a68fa69727","url":"https://multiplex.up.railway.app/"},
+'multiplex': {"secret":null,"id":"b9b225c19b1e784cb30cd8f1872b26a645111efcbe3622627277c02770a9dde7","url":"https://multiplex.up.railway.app/"},
 'smaller': false,
  
         // Display controls in the bottom right corner
