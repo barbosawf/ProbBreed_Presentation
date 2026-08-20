@@ -43,9 +43,10 @@ if (!requireNamespace("tidyverse", quietly = TRUE)) {
   install.packages("tidyverse")
 }
 
-# Alternatively, the development version of ProbBreed from GitHub:
-# install.packages("remotes")
-# remotes::install_github("saulo-chaves/ProbBreed")
+# Alternatively, the development version of ProbBreed from GitHub
+# (pak resolves and installs dependencies faster than install.packages):
+# install.packages("pak")
+# pak::pak("saulo-chaves/ProbBreed")
 ```
 
 The `install-packages` chunk at the top of [`hands_on_tutorial.qmd`](hands_on_tutorial.qmd) runs this same check automatically, so it only re-installs when a package isn't already available.
