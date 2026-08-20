@@ -81,7 +81,9 @@ if (!requireNamespace("ProbBreed", quietly = TRUE)) {
 #| label: load-packages
 
 library(ProbBreed)   # the star of the show
-library(ggplot2)      # ProbBreed's plot methods are built on ggplot2
+library(tidyverse)    # ProbBreed's plot methods are built on ggplot2;
+                       # tidyverse also brings dplyr/readr etc. along for
+                       # the light data wrangling used later in this doc
 ```
 
 ::: {.callout-tip}
