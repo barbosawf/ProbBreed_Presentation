@@ -665,7 +665,9 @@ flowchart LR
 <li class="fragment"><strong>Variance components</strong>, with highest posterior density (HPD) intervals</li>
 <li class="fragment"><strong>Goodness-of-fit diagnostics</strong>: Bayesian <em>p</em>-values, <span class="math inline">\(\hat{R}\)</span>, WAIC2, effective sample size</li>
 </ul>
+<div class="fragment">
 <p><code>plot(outs)</code> compares the empirical vs.&nbsp;simulated phenotype distributions — the closer the overlap, the more the model captured the real data.</p>
+</div>
 <aside class="notes">
 <p>Frame this as the “check your work” step before trusting any probability: we never go straight from bayes_met() to conclusions. [Click through the bullets one at a time.] The posterior distributions are the raw material for step three; the simulated data and diagnostics are what let us sanity-check the fit. [Point at the closing sentence about plot(outs).] In the tutorial, this is literally one line of code, and we’ll look at exactly this empirical-vs-simulated plot together to decide whether we trust the model enough to move on.</p>
 <style type="text/css">
@@ -704,11 +706,13 @@ flowchart LR
 </div>
 </div>
 </div>
+<div style="font-size: 0.8em;">
 <ul>
 <li><code>results$across</code> — superior performance, pairwise performance, superior stability, pairwise stability, and joint probability, computed <strong>across the whole trial network</strong></li>
 <li><code>results$within</code> — performance and pairwise performance, computed separately <strong>within each individual environment</strong></li>
 <li>Only one extra input is needed beyond the fitted model: the <strong>selection intensity</strong> (<code>int</code>)</li>
 </ul>
+</div>
 <aside class="notes">
 <p>This slide sets up the structure for everything that follows – [point at the diagram] two lists hanging off one object, across and within. Mirror this explicitly to the package documentation: “this is exactly the probsup object you’ll see in the site docs and in the tutorial.” [Point at the two accessor bullets.] Emphasize that the next few slides are literally walking through the elements of results<span class="math inline">\(across one at a time, then results\)</span>within – so this diagram is the map for the rest of this section. Also stress the <code>int</code> argument: it’s the only new piece of information the breeder has to supply, the selection intensity, e.g.&nbsp;top 20%.</p>
 <style type="text/css">
@@ -967,7 +971,7 @@ flowchart LR
 'jumpToSlide': true,
 'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"8\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
 'chalkboard': {"buttons":true},
-'multiplex': {"secret":null,"id":"75a5a7794d6adecf7c5762d2b592df9ea217f790d4f58b3a6ee40ae1e4f6ca66","url":"https://multiplex.up.railway.app/"},
+'multiplex': {"secret":null,"id":"f9f1df8f7483261ca514453e5115df58d7b444b93cd81485ef4ec4a68fa69727","url":"https://multiplex.up.railway.app/"},
 'smaller': false,
  
         // Display controls in the bottom right corner
