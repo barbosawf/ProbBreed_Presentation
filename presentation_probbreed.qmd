@@ -93,7 +93,7 @@ execute:
 :::
 
 <div class="notes">
-Welcome everyone, thank them for coming to the lab meeting. Introduce yourself and Rhoda, and mention this is a joint presentation. [Wait for the room to settle before advancing.] One-sentence framing: "Today we're going to walk through ProbBreed, a package Kaio and collaborators built for turning multi-environment trial data into risk-aware cultivar recommendations -- first the theory, then a hands-on session where everyone runs the code with us."
+Welcome everyone, thank you for coming to the lab meeting. I'm Wagner, this is Rhoda, and we're presenting together today. Today we're going to walk through ProbBreed, a package built for turning multi-environment trial data into risk-aware cultivar recommendations. We'll start with the theory, and then move into a hands-on session where everyone runs the code with us.
 </div>
 
 ```{=html}
@@ -132,7 +132,7 @@ Welcome everyone, thank them for coming to the lab meeting. Introduce yourself a
 :::
 
 <div class="notes">
-Open with the core motivating problem. [Click through the bullets one at a time, pause after each.] Start concrete: "Imagine you've run trials at 16 locations for 3 years. You have a ranking. But rankings hide something important -- genotype-by-environment interaction, GEI, means the #1 genotype at one site might be #20 somewhere else." Land on the quoted question -- read it out loud, slowly, it's the thesis of the whole talk. Emphasize that AMMI/GGE biplots are great for *exploring* GEI visually but don't give you a number you can act on.
+Imagine you've run trials at 16 locations for three years. You have a ranking. But rankings hide something important: genotype-by-environment interaction, GEI, means the number-one genotype at one site might be number twenty somewhere else. Classical tools like BLUEs, BLUPs, and AMMI or GGE biplots are great for exploring GEI visually, but they don't give you a number you can act on. So the question breeders actually need answered is: how likely is this genotype to still be a good choice next year, somewhere new?
 </div>
 
 ## From ranking to risk
@@ -149,7 +149,7 @@ This shift — from a point estimate to a **probability of success** — is what
 `ProbBreed` implements the Bayesian method of **Dias *et al.* (2022, *TAG*)** as an `R` package, described in **Chaves *et al.* (2024, *G3*)**.
 
 <div class="notes">
-[Point at the callout box -- this is the single most important idea in the talk, say it slowly.] "This is the reframe: instead of a single best-guess ranking, we ask for a probability." Explain why that matters practically: a probability is something a breeder can weigh against cost, time, and risk tolerance, the same way they already think about selection intensity. Then bridge to the citation: this isn't a new statistical idea we invented for the talk -- it's a peer-reviewed method (Dias et al. 2022) that Saulo Chaves and colleagues packaged into easy-to-use R functions (Chaves et al. 2024), which is what we're demonstrating today.
+This is the reframe: instead of a single best-guess ranking, we ask for a probability. That matters practically because a probability is something a breeder can weigh against cost, time, and risk tolerance, the same way they already think about selection intensity. This isn't a new statistical idea we invented for this talk -- it's a peer-reviewed method from Dias et al. 2022, that Saulo Chaves and colleagues packaged into easy-to-use R functions in Chaves et al. 2024, which is what we're demonstrating today.
 </div>
 
 ## Why Bayesian?
@@ -161,12 +161,8 @@ This shift — from a point estimate to a **probability of success** — is what
 | "Risk of recommendation" | Not directly available | Directly computable as a probability |
 | Interpretation | "Genotype A's BLUP is higher" | "Genotype A has an 87% chance of being top-tier" |
 
-- Models are fit with **Stan** (`rstan`), using the self-tuning **No-U-Turn Sampler**
-- Priors are weakly informative and data-driven: $\phi = \max(y) \times 10$
-- Payoff: the **entire posterior** of every genotypic effect feeds directly into probability calculations
-
 <div class="notes">
-[Give the table a moment to be read before you talk over it.] Walk row by row: "Output" -- frequentist gives you one number per genotype, Bayesian gives you a whole distribution of plausible values. "Uncertainty" -- ratios and rankings are notoriously hard to get confidence intervals for in the frequentist world; here it falls out for free. "Risk of recommendation" is the row that matters most to breeders -- literally not computable without a posterior. Finish on the bottom bullets: mention Stan/NUTS only briefly (no need to teach HMC here), and flag that the prior hyperparameter is *data-driven*, not something the user has to tune.
+For output, a frequentist approach gives you one number per genotype; a Bayesian approach gives you a whole distribution of plausible values. For uncertainty, ratios and rankings are notoriously hard to get confidence intervals for in the frequentist world, but here it falls out for free. And for risk of recommendation specifically, that's simply not computable in the frequentist framework -- you need a posterior distribution to get there. So a genotype's BLUP being higher tells you less than being able to say this genotype has an 87 percent chance of being top-tier.
 </div>
 
 ## The core idea: defining "success"
@@ -192,7 +188,7 @@ flowchart LR
 In words: **simulate $S$ virtual trials** from the posterior, and count how often genotype $j$ would have been selected. The same counting logic — applied within an environment, to a pairwise comparison, or to a GEI variance — produces every other probability in the package.
 
 <div class="notes">
-[Point at the formula on screen while you explain it symbol by symbol.] "Omega is just 'the winners' circle' -- whatever top slice of genotypes the breeder wants, say top 20%. The hat-g-j is genotype j's estimated effect. This formula is really just counting." [Then point at the diagram, left to right.] Walk through the five boxes as a mechanical recipe: fit the model once, draw thousands of samples from its posterior, check in each sample whether genotype j would have made the cut, count the successes, divide by the total. That count-and-divide pattern is the engine behind literally everything else we'll see today -- performance, stability, pairwise comparisons, all of it.
+Omega is just the winners' circle -- whatever top slice of genotypes the breeder wants, say the top 20 percent. The hat-g-j is genotype j's estimated effect. This formula is really just counting: we fit the model once, draw thousands of samples from its posterior, check in each sample whether genotype j would have made the cut, count the successes, and divide by the total. That count-and-divide pattern is the engine behind literally everything else we'll see today -- performance, stability, pairwise comparisons, all of it.
 </div>
 
 ## Four probability lenses
@@ -221,7 +217,7 @@ flowchart TD
 Every one of these is a **direct, interpretable probability** — the same currency breeders already use when they talk about "risk." Stability is defined à la **Shukla (1972)**: low genotype-by-environment variance.
 
 <div class="notes">
-[Draw attention to the diagram -- give the audience a few seconds to read all four columns before narrating.] Frame this as a preview, not the full derivation: "These are the four questions ProbBreed answers, and later in the talk we'll write out the actual formula for each one." Walk left to right: raw performance, then a head-to-head comparison (useful for 'is my new line better than the check?'), then stability in the classic Shukla sense -- low GEI variance means the genotype behaves the same everywhere -- and finally the joint probability, which most breeders care about most because it rewards genotypes that are *both* good and dependable.
+These are the four questions ProbBreed answers, and later in the talk we'll write out the actual formula for each one. First, raw performance. Then a head-to-head comparison, useful for asking is my new line better than the check. Then stability, in the classic Shukla sense: low GEI variance means the genotype behaves the same way everywhere. And finally, the joint probability, which most breeders care about most, because it rewards genotypes that are both good and dependable.
 </div>
 
 ## The 3-step workflow
@@ -245,7 +241,7 @@ flowchart LR
 | `prob_sup()` | Computes every probability above, across and within environments |
 
 <div class="notes">
-This is the "zoom out" slide -- after all the theory, ground it in three function calls. [Trace the arrow left to right with your finger or the laser pointer.] "Everything you just saw collapses into three R functions: fit, extract, compute." Mention that this is deliberately the whole pipeline -- no other steps required -- which is the accessibility contribution of the package relative to the original Dias et al. method, which required writing Stan code by hand. We're about to walk through all three steps in turn, starting with `bayes_met()` next.
+Everything you just saw collapses into three R functions: fit, extract, compute. This is deliberately the whole pipeline -- no other steps required. That's the accessibility contribution of the package relative to the original Dias et al. method, which required writing Stan code by hand. We're about to walk through all three steps in turn, starting with bayes_met next.
 </div>
 
 ## `bayes_met()`: the function and its parameters
@@ -272,7 +268,7 @@ mod = bayes_met(
 :::
 
 <div class="notes">
-[Point at the code block and read the argument list top to bottom.] This single function call is the entire modeling step -- there's no Stan code to write by hand. [Click through the bullets one at a time.] Emphasize the grouping: gen/loc/trait are always required, repl/reg/year are the three switches that determine which of the nine models gets fit (that's the very next slide), res.het is a modeling choice about residual variance, and iter/cores/chains are just computational effort. If someone asks about the `...` passthrough, mention `seed` for reproducibility and `adapt_delta` for convergence tuning as the two most commonly needed.
+This single function call is the entire modeling step -- there's no Stan code to write by hand. Gen, loc, and trait are always required. Repl, reg, and year are the three switches that determine which of the nine models gets fit, which is the very next slide. Res.het is a modeling choice about residual variance, and iter, cores, and chains are just computational effort. The extra arguments pass through to rstan's sampling function -- the two most commonly needed are seed, for reproducibility, and adapt_delta, for convergence tuning.
 </div>
 
 ## The full model catalog
@@ -301,7 +297,7 @@ Every combination is called the same way — just change `repl`, `reg`, `year` i
 - Full equations for all nine: `?bayes_met` or the package site, Section 2
 
 <div class="notes">
-This slide is the reference card -- [say "you don't need to memorize this, it's here so you know where to look it up later"]. Point out the three color bands: green for the single mean model, blue for the four RCBD variants, purple for the four incomplete-block variants -- same colors we use in every diagram today, so the mapping should already feel familiar. If someone asks "what if I have a design that doesn't fit any of these nine", mention this is exactly what the res.het, iter, chains, and the `...` passthrough to rstan::sampling() are for -- there's room to customize beyond the nine presets.
+This slide is the reference card -- you don't need to memorize it, it's here so you know where to look it up later. The three color bands are green for the single mean model, blue for the four RCBD variants, and purple for the four incomplete-block variants -- the same colors we've used in every diagram today. And if your design doesn't fit any of these nine exactly, that's what res.het, iter, chains, and the passthrough to rstan's sampling function are for -- there's room to customize beyond the nine presets.
 </div>
 
 ## `extr_outs()`: checking the model fit
@@ -327,7 +323,7 @@ Returns an object of class `extr` — a list with:
 :::
 
 <div class="notes">
-Frame this as the "check your work" step before trusting any probability: we never go straight from bayes_met() to conclusions. [Click through the bullets one at a time.] The posterior distributions are the raw material for step three; the simulated data and diagnostics are what let us sanity-check the fit. [Point at the closing sentence about plot(outs).] In the tutorial, this is literally one line of code, and we'll look at exactly this empirical-vs-simulated plot together to decide whether we trust the model enough to move on.
+This is the check-your-work step before trusting any probability -- we never go straight from bayes_met to conclusions. The posterior distributions are the raw material for step three. The simulated data and diagnostics are what let us sanity-check the fit. In the tutorial, this is literally one line of code, and we'll look at exactly this empirical-versus-simulated plot together to decide whether we trust the model enough to move on.
 </div>
 
 ## `prob_sup()`: the `probsup` object
@@ -362,7 +358,7 @@ flowchart LR
 :::
 
 <div class="notes">
-This slide sets up the structure for everything that follows -- [point at the diagram] two lists hanging off one object, across and within. Mirror this explicitly to the package documentation: "this is exactly the probsup object you'll see in the site docs and in the tutorial." [Point at the two accessor bullets.] Emphasize that the next few slides are literally walking through the elements of results$across one at a time, then results$within -- so this diagram is the map for the rest of this section. Also stress the `int` argument: it's the only new piece of information the breeder has to supply, the selection intensity, e.g. top 20%.
+This slide sets up the structure for everything that follows: two lists hanging off one object, across and within. This is exactly the probsup object you'll see in the site docs and in the tutorial. The next few slides literally walk through the elements of results$across one at a time, then results$within -- so this diagram is the map for the rest of this section. The only new piece of information the breeder has to supply is the int argument, the selection intensity, for example the top 20 percent.
 </div>
 
 ## `results$across`: probability of superior performance
@@ -382,7 +378,7 @@ $$
 *(flip the inequality to $<$ when selecting for a decreasing trait, e.g. plant height or disease severity)*
 
 <div class="notes">
-[Point at the formula on the left -- the first equation.] This is the formal version of the counting-game diagram from earlier: same S posterior draws, same indicator function, same division by S -- and it's what lands in results$across$perfo. [Point at the second formula.] The pairwise version answers a much more concrete breeding question -- "is my elite candidate actually better than the commercial check?" -- and lands in results$across$pair_perfo. Flag the footnote about flipping the inequality; it's a one-argument change in the R function (`increase = FALSE`) but easy to forget conceptually.
+This is the formal version of the counting-game diagram from earlier: same S posterior draws, same indicator function, same division by S -- and it's what lands in results$across$perfo. The pairwise version answers a much more concrete breeding question: is my elite candidate actually better than the commercial check. That lands in results$across$pair_perfo. One detail worth remembering: for a decreasing trait, like plant height or disease severity, you flip the inequality, which is just a one-argument change in the R function, increase equals FALSE.
 </div>
 
 ## `results$across`: probability of superior stability
@@ -400,7 +396,7 @@ $$
 $$
 
 <div class="notes">
-[Point at the stability definition at the top before moving to the formula.] Ground this before the math: stability here is *not* about high performance, it's about the genotype behaving the same way everywhere -- low genotype-by-environment interaction variance. Same counting recipe as performance, just applied to the variance component instead of the main effect, landing in results$across$stabi -- [point at var(ge_jk) in the formula] note that "belonging to Omega" here means having a variance small enough to be in the low-variance group, not a high value. The pairwise version at the bottom (results$across$pair_stabi) directly compares two genotypes' consistency.
+Stability here is not about high performance -- it's about the genotype behaving the same way everywhere, meaning a low genotype-by-environment interaction variance. It's the same counting recipe as performance, just applied to the variance component instead of the main effect, and it lands in results$across$stabi. Belonging to Omega here means having a variance small enough to be in the low-variance group, not a high value. The pairwise version, results$across$pair_stabi, directly compares two genotypes' consistency.
 </div>
 
 ## `results$across`: joint probability
@@ -418,7 +414,7 @@ $$
 :::
 
 <div class="notes">
-[Point at the formula -- it's just a multiplication, make that clear right away.] "This looks intimidating but it's literally just performance-probability times stability-probability." Because the model treats the genotypic main effect and the GxE variance as independent random quantities, the joint probability of two independent events is just their product -- no new machinery needed, and it's the last element of results$across. [Click through the bullets one at a time.] This is usually the number breeders care about most in a final recommendation decision, precisely because it's rare for the same genotype to win on every single metric -- this is the tie-breaker.
+This looks intimidating but it's literally just performance-probability times stability-probability. Because the model treats the genotypic main effect and the GxE variance as independent random quantities, the joint probability of two independent events is just their product -- no new machinery needed. This is the last element of results$across. It's usually the number breeders care about most in a final recommendation decision, precisely because it's rare for the same genotype to win on every single metric -- this is the tie-breaker.
 </div>
 
 ## `results$within`: performance in each environment
@@ -438,7 +434,7 @@ $$
 Both are computed **per environment** — one heatmap per location or region, not a single global number.
 
 <div class="notes">
-[Point at the subscript k in the formulas -- that's the only difference from the across-environment performance formulas we saw earlier.] The genotypic effect now includes the environment-specific deviation (g-hat-jk instead of g-hat-j), and Omega-k is the top slice *within* that one environment -- this is the results$within list, the second half of the probsup object from a few slides ago. Explain why this matters practically: a breeder recommending cultivars to growers in one specific region doesn't care about performance averaged across the whole trial network -- they care about performance right there. In the tutorial, this is what produces the heatmaps rather than the lollipop charts.
+The only difference from the across-environment performance formulas we saw earlier is the subscript k. The genotypic effect now includes the environment-specific deviation, g-hat-jk instead of g-hat-j, and Omega-k is the top slice within that one environment. This is the results$within list, the second half of the probsup object from a few slides ago. This matters practically because a breeder recommending cultivars to growers in one specific region doesn't care about performance averaged across the whole trial network -- they care about performance right there. In the tutorial, this is what produces the heatmaps rather than the lollipop charts.
 </div>
 
 ## Key takeaways
@@ -451,7 +447,7 @@ Both are computed **per environment** — one heatmap per location or region, no
 :::
 
 <div class="notes">
-[Click through the items one at a time, pausing on each.] This is the summary slide -- resist the urge to re-explain everything, just land each point once. Don't linger on next steps here; the very next slide sets up exactly what we're about to run together.
+Cultivar recommendation is a decision under uncertainty -- GEI makes single-estimate rankings incomplete. ProbBreed recasts that uncertainty as directly interpretable probabilities, from a Bayesian MET model's posterior. One consistent input, the selection intensity, drives performance, stability, pairwise, and joint probabilities. And the whole workflow is three functions: bayes_met, extr_outs, and prob_sup.
 </div>
 
 ## Our working example: the `maize` dataset
@@ -482,7 +478,7 @@ Please have `R`, `ProbBreed`, and a working `rstan` toolchain ready — we switc
 :::
 
 <div class="notes">
-[Click through the bullets, give each a beat.] This is our closing bridge slide into the hands-on session: real maize trial data from the original Dias et al. 2022 paper, provided by Embrapa Milho e Sorgo -- so this isn't a toy example, it's the dataset that motivated the method in the first place. Point out that this maps onto the IBD-with-regions row from the model catalog earlier -- 16 locations, 5 regions, incomplete blocks, 2 reps. [Reveal the diagram fragment and walk through it left to right -- it's the same three-function pipeline from earlier, applied to this exact dataset.] [Reveal the final fragment and ask everyone to open their laptop now]; confirm ProbBreed and rstan are installed before moving to the tutorial file.
+This is real maize trial data from the original Dias et al. 2022 paper, provided by Embrapa Milho e Sorgo -- so this isn't a toy example, it's the dataset that motivated the method in the first place. It maps onto the IBD-with-regions row from the model catalog earlier: 16 locations, 5 regions, incomplete blocks, 2 replicates. The pipeline is the same three functions from earlier, applied to this exact dataset: load the data, fit the model, diagnose the fit, compute the probabilities, and rank the genotypes for recommendation. Please make sure R, ProbBreed, and a working rstan toolchain are ready, because we're switching to the tutorial next.
 </div>
 
 ## References
@@ -494,7 +490,7 @@ Dias, K. O. G., Santos, J. P. R., Krause, M. D., Piepho, H.-P., Guimarães, L. J
 Package documentation: <https://saulo-chaves.github.io/ProbBreed_site/>
 
 <div class="notes">
-Leave this slide up for a few seconds in silence so people can photograph it or note the DOIs down -- no need to read the citations aloud word for word. Mention that both papers, plus a link to the package site, are also listed at the top of the hands-on tutorial document for anyone who wants them later.
+Both of these papers, along with a link to the package site, are also listed at the top of the hands-on tutorial document, so you can find them again later.
 </div>
 
 ## {.center-slide}
@@ -504,5 +500,5 @@ Thank you!<br>Questions welcome.
 :::
 
 <div class="notes">
-Open the floor. If the room is quiet, prime it with one concrete question of your own, e.g. "has anyone here already used AMMI or GGE biplots for a dataset like this? Curious how a probability-based ranking would have compared."
+Thank you very much -- I'm happy to take any questions. And if nobody has one to start, I'm curious: has anyone here already used AMMI or GGE biplots for a dataset like this? I'd love to know how a probability-based ranking would have compared.
 </div>
