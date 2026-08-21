@@ -28,6 +28,11 @@ Requires [Quarto](https://quarto.org/docs/get-started/) and R.
 `ProbBreed` depends on `rstan`, which in turn requires a working C++ toolchain: **Rtools** on Windows, the **Xcode command-line tools** on macOS, or `build-essential` on Linux. Install that first, then, from an R console in the project directory:
 
 ```r
+# Needed if your R installation has no default CRAN mirror configured yet
+# (common on a fresh machine) -- otherwise install.packages() errors with
+# "trying to use CRAN without setting a mirror" when run non-interactively.
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 if (!requireNamespace("ProbBreed", quietly = TRUE)) {
   install.packages("ProbBreed")
 }

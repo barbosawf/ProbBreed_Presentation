@@ -64,12 +64,22 @@ Run this once per machine. `ProbBreed` depends on `rstan`, which in turn require
 ```{r}
 #| label: install-packages
 
+# quarto render runs R non-interactively, so install.packages() can't
+# show the usual "pick a CRAN mirror" prompt -- without a repos= here,
+# a machine with no mirror already configured fails with
+# "trying to use CRAN without setting a mirror". The cloud mirror is a
+# geographically load-balanced, always-available choice.
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
 # Installing ProbBreed compiles rstan's C++ backend, which can take a long
 # time. This check installs it only if it isn't already available, so
 # re-running this chunk (or re-knitting this document) never re-triggers
 # that slow install unnecessarily.
 if (!requireNamespace("ProbBreed", quietly = TRUE)) {
   install.packages("ProbBreed")
+}
+if (!requireNamespace("tidyverse", quietly = TRUE)) {
+  install.packages("tidyverse")
 }
 
 # Alternatively, the development version from GitHub
