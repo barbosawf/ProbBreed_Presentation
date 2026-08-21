@@ -3735,18 +3735,28 @@ caption, .figure-caption { text-align: center; }
 <h2 data-number="2.1" class="anchored" data-anchor-id="installing-and-loading-the-package"><span class="header-section-number">2.1</span> Installing and loading the package</h2>
 <p>Run this once per machine. <code>ProbBreed</code> depends on <code>rstan</code>, which in turn requires a working C++ toolchain (Rtools on Windows, Xcode command-line tools on macOS, or <code>build-essential</code> on Linux). If <code>rstan</code> is already installed and working on your machine, installing <code>ProbBreed</code> itself is quick.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Installing ProbBreed compiles rstan&#39;s C++ backend, which can take a long</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># time. This check installs it only if it isn&#39;t already available, so</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># re-running this chunk (or re-knitting this document) never re-triggers</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># that slow install unnecessarily.</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;ProbBreed&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;ProbBreed&quot;</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternatively, the development version from GitHub</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># (pak resolves and installs dependencies faster than install.packages):</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;pak&quot;)</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># pak::pak(&quot;saulo-chaves/ProbBreed&quot;)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># quarto render runs R non-interactively, so install.packages() can&#39;t</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># show the usual &quot;pick a CRAN mirror&quot; prompt -- without a repos= here,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># a machine with no mirror already configured fails with</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># &quot;trying to use CRAN without setting a mirror&quot;. The cloud mirror is a</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># geographically load-balanced, always-available choice.</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Installing ProbBreed compiles rstan&#39;s C++ backend, which can take a long</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># time. This check installs it only if it isn&#39;t already available, so</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># re-running this chunk (or re-knitting this document) never re-triggers</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># that slow install unnecessarily.</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;ProbBreed&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;ProbBreed&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;tidyverse&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternatively, the development version from GitHub</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># (pak resolves and installs dependencies faster than install.packages):</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;pak&quot;)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># pak::pak(&quot;saulo-chaves/ProbBreed&quot;)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ProbBreed)   <span class="co"># the star of the show</span></span>
@@ -4828,434 +4838,444 @@ Note
 <span id="cb51-66"><a href="#cb51-66" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
 <span id="cb51-67"><a href="#cb51-67" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: install-packages</span></span>
 <span id="cb51-68"><a href="#cb51-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-69"><a href="#cb51-69" aria-hidden="true" tabindex="-1"></a><span class="co"># Installing ProbBreed compiles rstan&#39;s C++ backend, which can take a long</span></span>
-<span id="cb51-70"><a href="#cb51-70" aria-hidden="true" tabindex="-1"></a><span class="co"># time. This check installs it only if it isn&#39;t already available, so</span></span>
-<span id="cb51-71"><a href="#cb51-71" aria-hidden="true" tabindex="-1"></a><span class="co"># re-running this chunk (or re-knitting this document) never re-triggers</span></span>
-<span id="cb51-72"><a href="#cb51-72" aria-hidden="true" tabindex="-1"></a><span class="co"># that slow install unnecessarily.</span></span>
-<span id="cb51-73"><a href="#cb51-73" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;ProbBreed&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
-<span id="cb51-74"><a href="#cb51-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;ProbBreed&quot;</span>)</span>
-<span id="cb51-75"><a href="#cb51-75" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb51-76"><a href="#cb51-76" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-77"><a href="#cb51-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternatively, the development version from GitHub</span></span>
-<span id="cb51-78"><a href="#cb51-78" aria-hidden="true" tabindex="-1"></a><span class="co"># (pak resolves and installs dependencies faster than install.packages):</span></span>
-<span id="cb51-79"><a href="#cb51-79" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;pak&quot;)</span></span>
-<span id="cb51-80"><a href="#cb51-80" aria-hidden="true" tabindex="-1"></a><span class="co"># pak::pak(&quot;saulo-chaves/ProbBreed&quot;)</span></span>
-<span id="cb51-81"><a href="#cb51-81" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-82"><a href="#cb51-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-85"><a href="#cb51-85" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-86"><a href="#cb51-86" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-packages</span></span>
-<span id="cb51-87"><a href="#cb51-87" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-88"><a href="#cb51-88" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ProbBreed)   <span class="co"># the star of the show</span></span>
-<span id="cb51-89"><a href="#cb51-89" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)    <span class="co"># ProbBreed&#39;s plot methods are built on ggplot2;</span></span>
-<span id="cb51-90"><a href="#cb51-90" aria-hidden="true" tabindex="-1"></a>                       <span class="co"># tidyverse also brings dplyr/readr etc. along for</span></span>
-<span id="cb51-91"><a href="#cb51-91" aria-hidden="true" tabindex="-1"></a>                       <span class="co"># the light data wrangling used later in this doc</span></span>
-<span id="cb51-92"><a href="#cb51-92" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-93"><a href="#cb51-93" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-94"><a href="#cb51-94" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
-<span id="cb51-95"><a href="#cb51-95" aria-hidden="true" tabindex="-1"></a><span class="fu">## Live-workshop timing</span></span>
-<span id="cb51-96"><a href="#cb51-96" aria-hidden="true" tabindex="-1"></a>Fitting a full Bayesian model with <span class="in">`iter = 4000`</span> and <span class="in">`chains = 4`</span> (the settings used in the package&#39;s own documentation) can take several minutes. If we are tight on time during the session, follow along using the **reduced settings** flagged below (`iter = 1000`, `chains = 2`, `cores = 2`) — the resulting probabilities will be a little noisier, but the workflow is identical, and you can re-run with the full settings afterward at home. If it is still too slow on your laptop, also run the optional **data-filtering** chunk in the next section to fit on fewer locations.</span>
-<span id="cb51-97"><a href="#cb51-97" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb51-98"><a href="#cb51-98" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-99"><a href="#cb51-99" aria-hidden="true" tabindex="-1"></a><span class="fu"># The `maize` Dataset</span></span>
-<span id="cb51-100"><a href="#cb51-100" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-101"><a href="#cb51-101" aria-hidden="true" tabindex="-1"></a><span class="in">`ProbBreed`</span> ships with a real MET dataset, used originally by Dias *et al.* (2022) to propose the underlying method. Let&#39;s explore it before modeling anything.</span>
-<span id="cb51-102"><a href="#cb51-102" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-105"><a href="#cb51-105" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-106"><a href="#cb51-106" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-data</span></span>
-<span id="cb51-107"><a href="#cb51-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-108"><a href="#cb51-108" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;maize&quot;</span>, <span class="at">package =</span> <span class="st">&quot;ProbBreed&quot;</span>)</span>
-<span id="cb51-109"><a href="#cb51-109" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(maize)</span>
-<span id="cb51-110"><a href="#cb51-110" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-111"><a href="#cb51-111" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-114"><a href="#cb51-114" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-115"><a href="#cb51-115" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: peek-data</span></span>
-<span id="cb51-116"><a href="#cb51-116" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-117"><a href="#cb51-117" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(maize)</span>
-<span id="cb51-118"><a href="#cb51-118" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-119"><a href="#cb51-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-122"><a href="#cb51-122" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-123"><a href="#cb51-123" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: design-summary</span></span>
-<span id="cb51-124"><a href="#cb51-124" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-125"><a href="#cb51-125" aria-hidden="true" tabindex="-1"></a><span class="co"># A quick summary of the trial network</span></span>
-<span id="cb51-126"><a href="#cb51-126" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Genotypes (hybrids + checks):&quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Hybrid)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb51-127"><a href="#cb51-127" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Locations:                   &quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Location)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb51-128"><a href="#cb51-128" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Regions (mega-environments): &quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Region)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb51-129"><a href="#cb51-129" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-130"><a href="#cb51-130" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-131"><a href="#cb51-131" aria-hidden="true" tabindex="-1"></a>**Design at a glance**</span>
-<span id="cb51-132"><a href="#cb51-132" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-133"><a href="#cb51-133" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**36 genotypes**: 32 experimental single-cross hybrids and 4 commercial checks</span>
-<span id="cb51-134"><a href="#cb51-134" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**16 locations**, nested within **5 regions** (mega-environments)</span>
-<span id="cb51-135"><a href="#cb51-135" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Incomplete block design (IBD)**: block size of 6, with 2 replicates per trial</span>
-<span id="cb51-136"><a href="#cb51-136" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Trait of interest: grain yield, column <span class="in">`GY`</span></span>
-<span id="cb51-137"><a href="#cb51-137" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Data kindly provided by Embrapa Milho e Sorgo</span>
-<span id="cb51-138"><a href="#cb51-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-139"><a href="#cb51-139" aria-hidden="true" tabindex="-1"></a>This is a realistic, moderately unbalanced MET — a good stress test for the probabilistic framework.</span>
+<span id="cb51-69"><a href="#cb51-69" aria-hidden="true" tabindex="-1"></a><span class="co"># quarto render runs R non-interactively, so install.packages() can&#39;t</span></span>
+<span id="cb51-70"><a href="#cb51-70" aria-hidden="true" tabindex="-1"></a><span class="co"># show the usual &quot;pick a CRAN mirror&quot; prompt -- without a repos= here,</span></span>
+<span id="cb51-71"><a href="#cb51-71" aria-hidden="true" tabindex="-1"></a><span class="co"># a machine with no mirror already configured fails with</span></span>
+<span id="cb51-72"><a href="#cb51-72" aria-hidden="true" tabindex="-1"></a><span class="co"># &quot;trying to use CRAN without setting a mirror&quot;. The cloud mirror is a</span></span>
+<span id="cb51-73"><a href="#cb51-73" aria-hidden="true" tabindex="-1"></a><span class="co"># geographically load-balanced, always-available choice.</span></span>
+<span id="cb51-74"><a href="#cb51-74" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">repos =</span> <span class="fu">c</span>(<span class="at">CRAN =</span> <span class="st">&quot;https://cloud.r-project.org&quot;</span>))</span>
+<span id="cb51-75"><a href="#cb51-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-76"><a href="#cb51-76" aria-hidden="true" tabindex="-1"></a><span class="co"># Installing ProbBreed compiles rstan&#39;s C++ backend, which can take a long</span></span>
+<span id="cb51-77"><a href="#cb51-77" aria-hidden="true" tabindex="-1"></a><span class="co"># time. This check installs it only if it isn&#39;t already available, so</span></span>
+<span id="cb51-78"><a href="#cb51-78" aria-hidden="true" tabindex="-1"></a><span class="co"># re-running this chunk (or re-knitting this document) never re-triggers</span></span>
+<span id="cb51-79"><a href="#cb51-79" aria-hidden="true" tabindex="-1"></a><span class="co"># that slow install unnecessarily.</span></span>
+<span id="cb51-80"><a href="#cb51-80" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;ProbBreed&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb51-81"><a href="#cb51-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;ProbBreed&quot;</span>)</span>
+<span id="cb51-82"><a href="#cb51-82" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb51-83"><a href="#cb51-83" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">requireNamespace</span>(<span class="st">&quot;tidyverse&quot;</span>, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb51-84"><a href="#cb51-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">&quot;tidyverse&quot;</span>)</span>
+<span id="cb51-85"><a href="#cb51-85" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb51-86"><a href="#cb51-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-87"><a href="#cb51-87" aria-hidden="true" tabindex="-1"></a><span class="co"># Alternatively, the development version from GitHub</span></span>
+<span id="cb51-88"><a href="#cb51-88" aria-hidden="true" tabindex="-1"></a><span class="co"># (pak resolves and installs dependencies faster than install.packages):</span></span>
+<span id="cb51-89"><a href="#cb51-89" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages(&quot;pak&quot;)</span></span>
+<span id="cb51-90"><a href="#cb51-90" aria-hidden="true" tabindex="-1"></a><span class="co"># pak::pak(&quot;saulo-chaves/ProbBreed&quot;)</span></span>
+<span id="cb51-91"><a href="#cb51-91" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-92"><a href="#cb51-92" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-95"><a href="#cb51-95" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-96"><a href="#cb51-96" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-packages</span></span>
+<span id="cb51-97"><a href="#cb51-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-98"><a href="#cb51-98" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ProbBreed)   <span class="co"># the star of the show</span></span>
+<span id="cb51-99"><a href="#cb51-99" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)    <span class="co"># ProbBreed&#39;s plot methods are built on ggplot2;</span></span>
+<span id="cb51-100"><a href="#cb51-100" aria-hidden="true" tabindex="-1"></a>                       <span class="co"># tidyverse also brings dplyr/readr etc. along for</span></span>
+<span id="cb51-101"><a href="#cb51-101" aria-hidden="true" tabindex="-1"></a>                       <span class="co"># the light data wrangling used later in this doc</span></span>
+<span id="cb51-102"><a href="#cb51-102" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-103"><a href="#cb51-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-104"><a href="#cb51-104" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
+<span id="cb51-105"><a href="#cb51-105" aria-hidden="true" tabindex="-1"></a><span class="fu">## Live-workshop timing</span></span>
+<span id="cb51-106"><a href="#cb51-106" aria-hidden="true" tabindex="-1"></a>Fitting a full Bayesian model with <span class="in">`iter = 4000`</span> and <span class="in">`chains = 4`</span> (the settings used in the package&#39;s own documentation) can take several minutes. If we are tight on time during the session, follow along using the **reduced settings** flagged below (`iter = 1000`, `chains = 2`, `cores = 2`) — the resulting probabilities will be a little noisier, but the workflow is identical, and you can re-run with the full settings afterward at home. If it is still too slow on your laptop, also run the optional **data-filtering** chunk in the next section to fit on fewer locations.</span>
+<span id="cb51-107"><a href="#cb51-107" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb51-108"><a href="#cb51-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-109"><a href="#cb51-109" aria-hidden="true" tabindex="-1"></a><span class="fu"># The `maize` Dataset</span></span>
+<span id="cb51-110"><a href="#cb51-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-111"><a href="#cb51-111" aria-hidden="true" tabindex="-1"></a><span class="in">`ProbBreed`</span> ships with a real MET dataset, used originally by Dias *et al.* (2022) to propose the underlying method. Let&#39;s explore it before modeling anything.</span>
+<span id="cb51-112"><a href="#cb51-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-115"><a href="#cb51-115" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-116"><a href="#cb51-116" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: load-data</span></span>
+<span id="cb51-117"><a href="#cb51-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-118"><a href="#cb51-118" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;maize&quot;</span>, <span class="at">package =</span> <span class="st">&quot;ProbBreed&quot;</span>)</span>
+<span id="cb51-119"><a href="#cb51-119" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(maize)</span>
+<span id="cb51-120"><a href="#cb51-120" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-121"><a href="#cb51-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-124"><a href="#cb51-124" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-125"><a href="#cb51-125" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: peek-data</span></span>
+<span id="cb51-126"><a href="#cb51-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-127"><a href="#cb51-127" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(maize)</span>
+<span id="cb51-128"><a href="#cb51-128" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-129"><a href="#cb51-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-132"><a href="#cb51-132" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-133"><a href="#cb51-133" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: design-summary</span></span>
+<span id="cb51-134"><a href="#cb51-134" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-135"><a href="#cb51-135" aria-hidden="true" tabindex="-1"></a><span class="co"># A quick summary of the trial network</span></span>
+<span id="cb51-136"><a href="#cb51-136" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Genotypes (hybrids + checks):&quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Hybrid)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb51-137"><a href="#cb51-137" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Locations:                   &quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Location)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb51-138"><a href="#cb51-138" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Regions (mega-environments): &quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Region)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb51-139"><a href="#cb51-139" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb51-140"><a href="#cb51-140" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-141"><a href="#cb51-141" aria-hidden="true" tabindex="-1"></a><span class="fu">## Speeding up the live run (optional)</span></span>
+<span id="cb51-141"><a href="#cb51-141" aria-hidden="true" tabindex="-1"></a>**Design at a glance**</span>
 <span id="cb51-142"><a href="#cb51-142" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-143"><a href="#cb51-143" aria-hidden="true" tabindex="-1"></a>Bayesian model runtime scales with both the number of MCMC iterations/chains *and* the size of the dataset. If Step 1 below is taking too long during the session, filter the data down before fitting: we keep 2 locations per region (10 of the 16 locations), which preserves the full region structure but noticeably cuts runtime. Skip this chunk entirely to use the full dataset.</span>
-<span id="cb51-144"><a href="#cb51-144" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-147"><a href="#cb51-147" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-148"><a href="#cb51-148" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: filter-data-for-speed</span></span>
-<span id="cb51-149"><a href="#cb51-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-150"><a href="#cb51-150" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
-<span id="cb51-151"><a href="#cb51-151" aria-hidden="true" tabindex="-1"></a>locs_subset <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">split</span>(maize<span class="sc">$</span>Location, maize<span class="sc">$</span>Region), <span class="cf">function</span>(locs) {</span>
-<span id="cb51-152"><a href="#cb51-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample</span>(<span class="fu">unique</span>(locs), <span class="at">size =</span> <span class="fu">min</span>(<span class="dv">2</span>, <span class="fu">length</span>(<span class="fu">unique</span>(locs))))</span>
-<span id="cb51-153"><a href="#cb51-153" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb51-143"><a href="#cb51-143" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**36 genotypes**: 32 experimental single-cross hybrids and 4 commercial checks</span>
+<span id="cb51-144"><a href="#cb51-144" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**16 locations**, nested within **5 regions** (mega-environments)</span>
+<span id="cb51-145"><a href="#cb51-145" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Incomplete block design (IBD)**: block size of 6, with 2 replicates per trial</span>
+<span id="cb51-146"><a href="#cb51-146" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Trait of interest: grain yield, column <span class="in">`GY`</span></span>
+<span id="cb51-147"><a href="#cb51-147" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Data kindly provided by Embrapa Milho e Sorgo</span>
+<span id="cb51-148"><a href="#cb51-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-149"><a href="#cb51-149" aria-hidden="true" tabindex="-1"></a>This is a realistic, moderately unbalanced MET — a good stress test for the probabilistic framework.</span>
+<span id="cb51-150"><a href="#cb51-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-151"><a href="#cb51-151" aria-hidden="true" tabindex="-1"></a><span class="fu">## Speeding up the live run (optional)</span></span>
+<span id="cb51-152"><a href="#cb51-152" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-153"><a href="#cb51-153" aria-hidden="true" tabindex="-1"></a>Bayesian model runtime scales with both the number of MCMC iterations/chains *and* the size of the dataset. If Step 1 below is taking too long during the session, filter the data down before fitting: we keep 2 locations per region (10 of the 16 locations), which preserves the full region structure but noticeably cuts runtime. Skip this chunk entirely to use the full dataset.</span>
 <span id="cb51-154"><a href="#cb51-154" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-155"><a href="#cb51-155" aria-hidden="true" tabindex="-1"></a>maize_fast <span class="ot">&lt;-</span> maize[maize<span class="sc">$</span>Location <span class="sc">%in%</span> locs_subset, ]</span>
-<span id="cb51-156"><a href="#cb51-156" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-157"><a href="#cb51-157" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Locations kept: &quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize_fast<span class="sc">$</span>Location)),</span>
-<span id="cb51-158"><a href="#cb51-158" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;of&quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Location)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb51-159"><a href="#cb51-159" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Rows kept:      &quot;</span>, <span class="fu">nrow</span>(maize_fast), <span class="st">&quot;of&quot;</span>, <span class="fu">nrow</span>(maize), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
-<span id="cb51-160"><a href="#cb51-160" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-161"><a href="#cb51-161" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-162"><a href="#cb51-162" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1 — Fit the Bayesian MET Model</span></span>
-<span id="cb51-163"><a href="#cb51-163" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-164"><a href="#cb51-164" aria-hidden="true" tabindex="-1"></a>The first step of any <span class="in">`ProbBreed`</span> analysis is <span class="in">`bayes_met()`</span>. Because our data includes replicate and block information, region information, but no year effect, we use the **incomplete-block-design model with locations and regions**.</span>
-<span id="cb51-165"><a href="#cb51-165" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-168"><a href="#cb51-168" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-169"><a href="#cb51-169" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fit-model-full</span></span>
-<span id="cb51-170"><a href="#cb51-170" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb51-157"><a href="#cb51-157" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-158"><a href="#cb51-158" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: filter-data-for-speed</span></span>
+<span id="cb51-159"><a href="#cb51-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-160"><a href="#cb51-160" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb51-161"><a href="#cb51-161" aria-hidden="true" tabindex="-1"></a>locs_subset <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">lapply</span>(<span class="fu">split</span>(maize<span class="sc">$</span>Location, maize<span class="sc">$</span>Region), <span class="cf">function</span>(locs) {</span>
+<span id="cb51-162"><a href="#cb51-162" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample</span>(<span class="fu">unique</span>(locs), <span class="at">size =</span> <span class="fu">min</span>(<span class="dv">2</span>, <span class="fu">length</span>(<span class="fu">unique</span>(locs))))</span>
+<span id="cb51-163"><a href="#cb51-163" aria-hidden="true" tabindex="-1"></a>}))</span>
+<span id="cb51-164"><a href="#cb51-164" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-165"><a href="#cb51-165" aria-hidden="true" tabindex="-1"></a>maize_fast <span class="ot">&lt;-</span> maize[maize<span class="sc">$</span>Location <span class="sc">%in%</span> locs_subset, ]</span>
+<span id="cb51-166"><a href="#cb51-166" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-167"><a href="#cb51-167" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Locations kept: &quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize_fast<span class="sc">$</span>Location)),</span>
+<span id="cb51-168"><a href="#cb51-168" aria-hidden="true" tabindex="-1"></a>    <span class="st">&quot;of&quot;</span>, <span class="fu">length</span>(<span class="fu">unique</span>(maize<span class="sc">$</span>Location)), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb51-169"><a href="#cb51-169" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">&quot;Rows kept:      &quot;</span>, <span class="fu">nrow</span>(maize_fast), <span class="st">&quot;of&quot;</span>, <span class="fu">nrow</span>(maize), <span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>)</span>
+<span id="cb51-170"><a href="#cb51-170" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb51-171"><a href="#cb51-171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-172"><a href="#cb51-172" aria-hidden="true" tabindex="-1"></a><span class="co"># Full-fidelity model, as used in the package documentation.</span></span>
-<span id="cb51-173"><a href="#cb51-173" aria-hidden="true" tabindex="-1"></a><span class="co"># This is what you should use for a real analysis outside the workshop.</span></span>
-<span id="cb51-174"><a href="#cb51-174" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb51-175"><a href="#cb51-175" aria-hidden="true" tabindex="-1"></a>  <span class="at">data    =</span> maize,</span>
-<span id="cb51-176"><a href="#cb51-176" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen     =</span> <span class="st">&quot;Hybrid&quot;</span>,     <span class="co"># column with genotype identifiers</span></span>
-<span id="cb51-177"><a href="#cb51-177" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc     =</span> <span class="st">&quot;Location&quot;</span>,   <span class="co"># column with location identifiers</span></span>
-<span id="cb51-178"><a href="#cb51-178" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl    =</span> <span class="fu">c</span>(<span class="st">&quot;Rep&quot;</span>, <span class="st">&quot;Block&quot;</span>),  <span class="co"># incomplete block design: replicate + block</span></span>
-<span id="cb51-179"><a href="#cb51-179" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg     =</span> <span class="st">&quot;Region&quot;</span>,     <span class="co"># column with region (mega-environment) identifiers</span></span>
-<span id="cb51-180"><a href="#cb51-180" aria-hidden="true" tabindex="-1"></a>  <span class="at">year    =</span> <span class="cn">NULL</span>,         <span class="co"># no year effect in this dataset</span></span>
-<span id="cb51-181"><a href="#cb51-181" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,         <span class="co"># heterogeneous residual variance across locations</span></span>
-<span id="cb51-182"><a href="#cb51-182" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait   =</span> <span class="st">&quot;GY&quot;</span>,         <span class="co"># response variable: grain yield</span></span>
-<span id="cb51-183"><a href="#cb51-183" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter    =</span> <span class="dv">4000</span>,</span>
-<span id="cb51-184"><a href="#cb51-184" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores   =</span> <span class="dv">4</span>,</span>
-<span id="cb51-185"><a href="#cb51-185" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains  =</span> <span class="dv">4</span>,</span>
-<span id="cb51-186"><a href="#cb51-186" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed    =</span> <span class="dv">2026</span>          <span class="co"># passed through to rstan::sampling() for reproducibility</span></span>
-<span id="cb51-187"><a href="#cb51-187" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb51-188"><a href="#cb51-188" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-189"><a href="#cb51-189" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-192"><a href="#cb51-192" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-193"><a href="#cb51-193" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fit-model-fast</span></span>
-<span id="cb51-194"><a href="#cb51-194" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: true</span></span>
-<span id="cb51-195"><a href="#cb51-195" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-196"><a href="#cb51-196" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduced-fidelity model, tuned for a live workshop timeslot: fewer</span></span>
-<span id="cb51-197"><a href="#cb51-197" aria-hidden="true" tabindex="-1"></a><span class="co"># iterations/chains, and (if the previous chunk was run) fewer locations.</span></span>
-<span id="cb51-198"><a href="#cb51-198" aria-hidden="true" tabindex="-1"></a><span class="co"># Same model structure throughout -&gt; faster, somewhat noisier posteriors.</span></span>
-<span id="cb51-199"><a href="#cb51-199" aria-hidden="true" tabindex="-1"></a>maize_run <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;maize_fast&quot;</span>)) maize_fast <span class="cf">else</span> maize</span>
-<span id="cb51-200"><a href="#cb51-200" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-201"><a href="#cb51-201" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">bayes_met</span>(</span>
-<span id="cb51-202"><a href="#cb51-202" aria-hidden="true" tabindex="-1"></a>  <span class="at">data    =</span> maize_run,</span>
-<span id="cb51-203"><a href="#cb51-203" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen     =</span> <span class="st">&quot;Hybrid&quot;</span>,</span>
-<span id="cb51-204"><a href="#cb51-204" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc     =</span> <span class="st">&quot;Location&quot;</span>,</span>
-<span id="cb51-205"><a href="#cb51-205" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl    =</span> <span class="fu">c</span>(<span class="st">&quot;Rep&quot;</span>, <span class="st">&quot;Block&quot;</span>),</span>
-<span id="cb51-206"><a href="#cb51-206" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg     =</span> <span class="st">&quot;Region&quot;</span>,</span>
-<span id="cb51-207"><a href="#cb51-207" aria-hidden="true" tabindex="-1"></a>  <span class="at">year    =</span> <span class="cn">NULL</span>,</span>
-<span id="cb51-208"><a href="#cb51-208" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb51-209"><a href="#cb51-209" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait   =</span> <span class="st">&quot;GY&quot;</span>,</span>
-<span id="cb51-210"><a href="#cb51-210" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter    =</span> <span class="dv">1000</span>,</span>
-<span id="cb51-211"><a href="#cb51-211" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores   =</span> <span class="dv">2</span>,</span>
-<span id="cb51-212"><a href="#cb51-212" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains  =</span> <span class="dv">2</span>,</span>
-<span id="cb51-213"><a href="#cb51-213" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed    =</span> <span class="dv">2026</span></span>
-<span id="cb51-214"><a href="#cb51-214" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb51-215"><a href="#cb51-215" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-216"><a href="#cb51-216" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-217"><a href="#cb51-217" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
-<span id="cb51-218"><a href="#cb51-218" aria-hidden="true" tabindex="-1"></a><span class="fu">## About convergence warnings</span></span>
-<span id="cb51-219"><a href="#cb51-219" aria-hidden="true" tabindex="-1"></a><span class="in">`rstan`</span> is conservative and may print warnings about divergent transitions or effective sample size — this is common, especially with the reduced iteration count above, and does not automatically invalidate the model. We check this properly in the next step with <span class="in">`extr_outs()`</span>, rather than reacting to warnings alone.</span>
-<span id="cb51-220"><a href="#cb51-220" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb51-221"><a href="#cb51-221" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-222"><a href="#cb51-222" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2 — Extract Outputs and Check Model Fit</span></span>
-<span id="cb51-223"><a href="#cb51-223" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-224"><a href="#cb51-224" aria-hidden="true" tabindex="-1"></a><span class="in">`extr_outs()`</span> extracts the posterior distributions, variance components, and goodness-of-fit diagnostics from the fitted model.</span>
-<span id="cb51-225"><a href="#cb51-225" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-228"><a href="#cb51-228" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-229"><a href="#cb51-229" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: extract-outputs</span></span>
-<span id="cb51-230"><a href="#cb51-230" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-231"><a href="#cb51-231" aria-hidden="true" tabindex="-1"></a>outs <span class="ot">&lt;-</span> <span class="fu">extr_outs</span>(</span>
-<span id="cb51-232"><a href="#cb51-232" aria-hidden="true" tabindex="-1"></a>  <span class="at">model   =</span> mod,</span>
-<span id="cb51-233"><a href="#cb51-233" aria-hidden="true" tabindex="-1"></a>  <span class="at">probs   =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>),  <span class="co"># bounds for the highest posterior density (HPD) interval</span></span>
-<span id="cb51-234"><a href="#cb51-234" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
-<span id="cb51-235"><a href="#cb51-235" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb51-236"><a href="#cb51-236" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-237"><a href="#cb51-237" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-238"><a href="#cb51-238" aria-hidden="true" tabindex="-1"></a><span class="fu">## Variance components</span></span>
-<span id="cb51-239"><a href="#cb51-239" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-242"><a href="#cb51-242" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-243"><a href="#cb51-243" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: variance-components</span></span>
-<span id="cb51-244"><a href="#cb51-244" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-245"><a href="#cb51-245" aria-hidden="true" tabindex="-1"></a>outs<span class="sc">$</span>variances</span>
+<span id="cb51-172"><a href="#cb51-172" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 1 — Fit the Bayesian MET Model</span></span>
+<span id="cb51-173"><a href="#cb51-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-174"><a href="#cb51-174" aria-hidden="true" tabindex="-1"></a>The first step of any <span class="in">`ProbBreed`</span> analysis is <span class="in">`bayes_met()`</span>. Because our data includes replicate and block information, region information, but no year effect, we use the **incomplete-block-design model with locations and regions**.</span>
+<span id="cb51-175"><a href="#cb51-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-178"><a href="#cb51-178" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-179"><a href="#cb51-179" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fit-model-full</span></span>
+<span id="cb51-180"><a href="#cb51-180" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb51-181"><a href="#cb51-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-182"><a href="#cb51-182" aria-hidden="true" tabindex="-1"></a><span class="co"># Full-fidelity model, as used in the package documentation.</span></span>
+<span id="cb51-183"><a href="#cb51-183" aria-hidden="true" tabindex="-1"></a><span class="co"># This is what you should use for a real analysis outside the workshop.</span></span>
+<span id="cb51-184"><a href="#cb51-184" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">bayes_met</span>(</span>
+<span id="cb51-185"><a href="#cb51-185" aria-hidden="true" tabindex="-1"></a>  <span class="at">data    =</span> maize,</span>
+<span id="cb51-186"><a href="#cb51-186" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen     =</span> <span class="st">&quot;Hybrid&quot;</span>,     <span class="co"># column with genotype identifiers</span></span>
+<span id="cb51-187"><a href="#cb51-187" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc     =</span> <span class="st">&quot;Location&quot;</span>,   <span class="co"># column with location identifiers</span></span>
+<span id="cb51-188"><a href="#cb51-188" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl    =</span> <span class="fu">c</span>(<span class="st">&quot;Rep&quot;</span>, <span class="st">&quot;Block&quot;</span>),  <span class="co"># incomplete block design: replicate + block</span></span>
+<span id="cb51-189"><a href="#cb51-189" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg     =</span> <span class="st">&quot;Region&quot;</span>,     <span class="co"># column with region (mega-environment) identifiers</span></span>
+<span id="cb51-190"><a href="#cb51-190" aria-hidden="true" tabindex="-1"></a>  <span class="at">year    =</span> <span class="cn">NULL</span>,         <span class="co"># no year effect in this dataset</span></span>
+<span id="cb51-191"><a href="#cb51-191" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,         <span class="co"># heterogeneous residual variance across locations</span></span>
+<span id="cb51-192"><a href="#cb51-192" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait   =</span> <span class="st">&quot;GY&quot;</span>,         <span class="co"># response variable: grain yield</span></span>
+<span id="cb51-193"><a href="#cb51-193" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter    =</span> <span class="dv">4000</span>,</span>
+<span id="cb51-194"><a href="#cb51-194" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores   =</span> <span class="dv">4</span>,</span>
+<span id="cb51-195"><a href="#cb51-195" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains  =</span> <span class="dv">4</span>,</span>
+<span id="cb51-196"><a href="#cb51-196" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed    =</span> <span class="dv">2026</span>          <span class="co"># passed through to rstan::sampling() for reproducibility</span></span>
+<span id="cb51-197"><a href="#cb51-197" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-198"><a href="#cb51-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-199"><a href="#cb51-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-202"><a href="#cb51-202" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-203"><a href="#cb51-203" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fit-model-fast</span></span>
+<span id="cb51-204"><a href="#cb51-204" aria-hidden="true" tabindex="-1"></a><span class="co">#| cache: true</span></span>
+<span id="cb51-205"><a href="#cb51-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-206"><a href="#cb51-206" aria-hidden="true" tabindex="-1"></a><span class="co"># Reduced-fidelity model, tuned for a live workshop timeslot: fewer</span></span>
+<span id="cb51-207"><a href="#cb51-207" aria-hidden="true" tabindex="-1"></a><span class="co"># iterations/chains, and (if the previous chunk was run) fewer locations.</span></span>
+<span id="cb51-208"><a href="#cb51-208" aria-hidden="true" tabindex="-1"></a><span class="co"># Same model structure throughout -&gt; faster, somewhat noisier posteriors.</span></span>
+<span id="cb51-209"><a href="#cb51-209" aria-hidden="true" tabindex="-1"></a>maize_run <span class="ot">&lt;-</span> <span class="cf">if</span> (<span class="fu">exists</span>(<span class="st">&quot;maize_fast&quot;</span>)) maize_fast <span class="cf">else</span> maize</span>
+<span id="cb51-210"><a href="#cb51-210" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-211"><a href="#cb51-211" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">bayes_met</span>(</span>
+<span id="cb51-212"><a href="#cb51-212" aria-hidden="true" tabindex="-1"></a>  <span class="at">data    =</span> maize_run,</span>
+<span id="cb51-213"><a href="#cb51-213" aria-hidden="true" tabindex="-1"></a>  <span class="at">gen     =</span> <span class="st">&quot;Hybrid&quot;</span>,</span>
+<span id="cb51-214"><a href="#cb51-214" aria-hidden="true" tabindex="-1"></a>  <span class="at">loc     =</span> <span class="st">&quot;Location&quot;</span>,</span>
+<span id="cb51-215"><a href="#cb51-215" aria-hidden="true" tabindex="-1"></a>  <span class="at">repl    =</span> <span class="fu">c</span>(<span class="st">&quot;Rep&quot;</span>, <span class="st">&quot;Block&quot;</span>),</span>
+<span id="cb51-216"><a href="#cb51-216" aria-hidden="true" tabindex="-1"></a>  <span class="at">reg     =</span> <span class="st">&quot;Region&quot;</span>,</span>
+<span id="cb51-217"><a href="#cb51-217" aria-hidden="true" tabindex="-1"></a>  <span class="at">year    =</span> <span class="cn">NULL</span>,</span>
+<span id="cb51-218"><a href="#cb51-218" aria-hidden="true" tabindex="-1"></a>  <span class="at">res.het =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb51-219"><a href="#cb51-219" aria-hidden="true" tabindex="-1"></a>  <span class="at">trait   =</span> <span class="st">&quot;GY&quot;</span>,</span>
+<span id="cb51-220"><a href="#cb51-220" aria-hidden="true" tabindex="-1"></a>  <span class="at">iter    =</span> <span class="dv">1000</span>,</span>
+<span id="cb51-221"><a href="#cb51-221" aria-hidden="true" tabindex="-1"></a>  <span class="at">cores   =</span> <span class="dv">2</span>,</span>
+<span id="cb51-222"><a href="#cb51-222" aria-hidden="true" tabindex="-1"></a>  <span class="at">chains  =</span> <span class="dv">2</span>,</span>
+<span id="cb51-223"><a href="#cb51-223" aria-hidden="true" tabindex="-1"></a>  <span class="at">seed    =</span> <span class="dv">2026</span></span>
+<span id="cb51-224"><a href="#cb51-224" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-225"><a href="#cb51-225" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-226"><a href="#cb51-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-227"><a href="#cb51-227" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
+<span id="cb51-228"><a href="#cb51-228" aria-hidden="true" tabindex="-1"></a><span class="fu">## About convergence warnings</span></span>
+<span id="cb51-229"><a href="#cb51-229" aria-hidden="true" tabindex="-1"></a><span class="in">`rstan`</span> is conservative and may print warnings about divergent transitions or effective sample size — this is common, especially with the reduced iteration count above, and does not automatically invalidate the model. We check this properly in the next step with <span class="in">`extr_outs()`</span>, rather than reacting to warnings alone.</span>
+<span id="cb51-230"><a href="#cb51-230" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb51-231"><a href="#cb51-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-232"><a href="#cb51-232" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 2 — Extract Outputs and Check Model Fit</span></span>
+<span id="cb51-233"><a href="#cb51-233" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-234"><a href="#cb51-234" aria-hidden="true" tabindex="-1"></a><span class="in">`extr_outs()`</span> extracts the posterior distributions, variance components, and goodness-of-fit diagnostics from the fitted model.</span>
+<span id="cb51-235"><a href="#cb51-235" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-238"><a href="#cb51-238" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-239"><a href="#cb51-239" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: extract-outputs</span></span>
+<span id="cb51-240"><a href="#cb51-240" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-241"><a href="#cb51-241" aria-hidden="true" tabindex="-1"></a>outs <span class="ot">&lt;-</span> <span class="fu">extr_outs</span>(</span>
+<span id="cb51-242"><a href="#cb51-242" aria-hidden="true" tabindex="-1"></a>  <span class="at">model   =</span> mod,</span>
+<span id="cb51-243"><a href="#cb51-243" aria-hidden="true" tabindex="-1"></a>  <span class="at">probs   =</span> <span class="fu">c</span>(<span class="fl">0.05</span>, <span class="fl">0.95</span>),  <span class="co"># bounds for the highest posterior density (HPD) interval</span></span>
+<span id="cb51-244"><a href="#cb51-244" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb51-245"><a href="#cb51-245" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb51-246"><a href="#cb51-246" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb51-247"><a href="#cb51-247" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-248"><a href="#cb51-248" aria-hidden="true" tabindex="-1"></a>This table shows how much variation is attributed to each source — genotype, location, region, the genotype-by-location and genotype-by-region interactions, and residual error per environment. The genotype-by-location interaction variance in particular is what feeds the **stability** probabilities in Step 3.</span>
+<span id="cb51-248"><a href="#cb51-248" aria-hidden="true" tabindex="-1"></a><span class="fu">## Variance components</span></span>
 <span id="cb51-249"><a href="#cb51-249" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-250"><a href="#cb51-250" aria-hidden="true" tabindex="-1"></a><span class="fu">## Goodness-of-fit diagnostics</span></span>
-<span id="cb51-251"><a href="#cb51-251" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-254"><a href="#cb51-254" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-255"><a href="#cb51-255" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ppcheck</span></span>
-<span id="cb51-256"><a href="#cb51-256" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-257"><a href="#cb51-257" aria-hidden="true" tabindex="-1"></a>outs<span class="sc">$</span>ppcheck</span>
-<span id="cb51-258"><a href="#cb51-258" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-252"><a href="#cb51-252" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-253"><a href="#cb51-253" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: variance-components</span></span>
+<span id="cb51-254"><a href="#cb51-254" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-255"><a href="#cb51-255" aria-hidden="true" tabindex="-1"></a>outs<span class="sc">$</span>variances</span>
+<span id="cb51-256"><a href="#cb51-256" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-257"><a href="#cb51-257" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-258"><a href="#cb51-258" aria-hidden="true" tabindex="-1"></a>This table shows how much variation is attributed to each source — genotype, location, region, the genotype-by-location and genotype-by-region interactions, and residual error per environment. The genotype-by-location interaction variance in particular is what feeds the **stability** probabilities in Step 3.</span>
 <span id="cb51-259"><a href="#cb51-259" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-260"><a href="#cb51-260" aria-hidden="true" tabindex="-1"></a>A few things worth checking here:</span>
+<span id="cb51-260"><a href="#cb51-260" aria-hidden="true" tabindex="-1"></a><span class="fu">## Goodness-of-fit diagnostics</span></span>
 <span id="cb51-261"><a href="#cb51-261" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-262"><a href="#cb51-262" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Bayesian p-values** (<span class="in">`p.val_*`</span>): ideally close to 0.5; values very near 0 or 1 suggest the model struggles to reproduce that aspect of the data</span>
-<span id="cb51-263"><a href="#cb51-263" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`mean_Rhat`**: should be close to 1 (commonly, $\hat{R} &lt; 1.05$ is considered acceptable) — this indicates the chains converged to the same distribution</span>
-<span id="cb51-264"><a href="#cb51-264" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`WAIC2`**: useful for comparing *alternative* models on the same data (lower is better); not meaningful in isolation</span>
-<span id="cb51-265"><a href="#cb51-265" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`Eff_sample_size`**: the effective sample size relative to the total draws — low values suggest we may want more iterations</span>
+<span id="cb51-264"><a href="#cb51-264" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-265"><a href="#cb51-265" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: ppcheck</span></span>
 <span id="cb51-266"><a href="#cb51-266" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-267"><a href="#cb51-267" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visual diagnostics</span></span>
-<span id="cb51-268"><a href="#cb51-268" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-271"><a href="#cb51-271" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-272"><a href="#cb51-272" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plot-density</span></span>
-<span id="cb51-273"><a href="#cb51-273" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Posterior distributions of the model effects&quot;</span></span>
-<span id="cb51-274"><a href="#cb51-274" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-275"><a href="#cb51-275" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(outs, <span class="at">category =</span> <span class="st">&quot;density&quot;</span>)</span>
-<span id="cb51-276"><a href="#cb51-276" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-277"><a href="#cb51-277" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-280"><a href="#cb51-280" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-281"><a href="#cb51-281" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plot-histogram</span></span>
-<span id="cb51-282"><a href="#cb51-282" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Posterior distributions of the model effects (histograms)&quot;</span></span>
-<span id="cb51-283"><a href="#cb51-283" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-284"><a href="#cb51-284" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(outs, <span class="at">category =</span> <span class="st">&quot;histogram&quot;</span>)</span>
-<span id="cb51-285"><a href="#cb51-285" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-286"><a href="#cb51-286" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-287"><a href="#cb51-287" aria-hidden="true" tabindex="-1"></a>The most important diagnostic plot compares the **empirical** phenotypic distribution to phenotypes **simulated** from the fitted model — the more the two densities overlap, the better the model captures the real data:</span>
-<span id="cb51-288"><a href="#cb51-288" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-291"><a href="#cb51-291" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-292"><a href="#cb51-292" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plot-ppcheck</span></span>
-<span id="cb51-293"><a href="#cb51-293" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Empirical vs. model-simulated phenotype distributions&quot;</span></span>
-<span id="cb51-294"><a href="#cb51-294" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-295"><a href="#cb51-295" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(outs)</span>
-<span id="cb51-296"><a href="#cb51-296" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-297"><a href="#cb51-297" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-298"><a href="#cb51-298" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
-<span id="cb51-299"><a href="#cb51-299" aria-hidden="true" tabindex="-1"></a>If <span class="in">`bayes_met()`</span> raised convergence warnings but these diagnostics look reasonable (Bayesian p-values away from the extremes, $\hat{R}$ close to 1, strong empirical/simulated overlap), it is generally safe to proceed to Step 3.</span>
-<span id="cb51-300"><a href="#cb51-300" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb51-301"><a href="#cb51-301" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-302"><a href="#cb51-302" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 3 — Compute the Probabilities</span></span>
-<span id="cb51-303"><a href="#cb51-303" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-304"><a href="#cb51-304" aria-hidden="true" tabindex="-1"></a>This is where the probabilistic framework pays off. <span class="in">`prob_sup()`</span> takes the extracted posterior (<span class="in">`outs`</span>) and a **selection intensity** and returns every probability discussed in the theory talk.</span>
-<span id="cb51-305"><a href="#cb51-305" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-308"><a href="#cb51-308" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-309"><a href="#cb51-309" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compute-probabilities</span></span>
-<span id="cb51-310"><a href="#cb51-310" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-311"><a href="#cb51-311" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">prob_sup</span>(</span>
-<span id="cb51-312"><a href="#cb51-312" aria-hidden="true" tabindex="-1"></a>  <span class="at">extr     =</span> outs,</span>
-<span id="cb51-313"><a href="#cb51-313" aria-hidden="true" tabindex="-1"></a>  <span class="at">int      =</span> <span class="fl">0.2</span>,     <span class="co"># selection intensity: top 20% of genotypes</span></span>
-<span id="cb51-314"><a href="#cb51-314" aria-hidden="true" tabindex="-1"></a>  <span class="at">increase =</span> <span class="cn">TRUE</span>,    <span class="co"># we want to INCREASE grain yield (use FALSE for traits like disease severity)</span></span>
-<span id="cb51-315"><a href="#cb51-315" aria-hidden="true" tabindex="-1"></a>  <span class="at">save.df  =</span> <span class="cn">FALSE</span>,   <span class="co"># set TRUE to also write the probability tables to the working directory as .csv</span></span>
-<span id="cb51-316"><a href="#cb51-316" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose  =</span> <span class="cn">FALSE</span></span>
-<span id="cb51-317"><a href="#cb51-317" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb51-318"><a href="#cb51-318" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-319"><a href="#cb51-319" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-320"><a href="#cb51-320" aria-hidden="true" tabindex="-1"></a>The result, <span class="in">`results`</span>, is a <span class="in">`probsup`</span> object containing two lists:</span>
-<span id="cb51-321"><a href="#cb51-321" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-322"><a href="#cb51-322" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`results$across`</span> — probabilities computed **across** environments (general adaptability)</span>
-<span id="cb51-323"><a href="#cb51-323" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`results$within`</span> — probabilities computed **within** individual environments (local recommendation)</span>
-<span id="cb51-324"><a href="#cb51-324" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-325"><a href="#cb51-325" aria-hidden="true" tabindex="-1"></a>We will explore both.</span>
-<span id="cb51-326"><a href="#cb51-326" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-327"><a href="#cb51-327" aria-hidden="true" tabindex="-1"></a><span class="fu">## Across-environment results</span></span>
-<span id="cb51-328"><a href="#cb51-328" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-329"><a href="#cb51-329" aria-hidden="true" tabindex="-1"></a><span class="fu">### Posterior genotypic effects (HPD)</span></span>
-<span id="cb51-330"><a href="#cb51-330" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-331"><a href="#cb51-331" aria-hidden="true" tabindex="-1"></a>The highest posterior density (HPD) interval of each genotype&#39;s main effect gives us a first, uncertainty-aware overview of performance:</span>
-<span id="cb51-332"><a href="#cb51-332" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-335"><a href="#cb51-335" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-336"><a href="#cb51-336" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: hpd-table</span></span>
-<span id="cb51-337"><a href="#cb51-337" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-338"><a href="#cb51-338" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>g_hpd)</span>
-<span id="cb51-339"><a href="#cb51-339" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-267"><a href="#cb51-267" aria-hidden="true" tabindex="-1"></a>outs<span class="sc">$</span>ppcheck</span>
+<span id="cb51-268"><a href="#cb51-268" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-269"><a href="#cb51-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-270"><a href="#cb51-270" aria-hidden="true" tabindex="-1"></a>A few things worth checking here:</span>
+<span id="cb51-271"><a href="#cb51-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-272"><a href="#cb51-272" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Bayesian p-values** (<span class="in">`p.val_*`</span>): ideally close to 0.5; values very near 0 or 1 suggest the model struggles to reproduce that aspect of the data</span>
+<span id="cb51-273"><a href="#cb51-273" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`mean_Rhat`**: should be close to 1 (commonly, $\hat{R} &lt; 1.05$ is considered acceptable) — this indicates the chains converged to the same distribution</span>
+<span id="cb51-274"><a href="#cb51-274" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`WAIC2`**: useful for comparing *alternative* models on the same data (lower is better); not meaningful in isolation</span>
+<span id="cb51-275"><a href="#cb51-275" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**`Eff_sample_size`**: the effective sample size relative to the total draws — low values suggest we may want more iterations</span>
+<span id="cb51-276"><a href="#cb51-276" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-277"><a href="#cb51-277" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visual diagnostics</span></span>
+<span id="cb51-278"><a href="#cb51-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-281"><a href="#cb51-281" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-282"><a href="#cb51-282" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plot-density</span></span>
+<span id="cb51-283"><a href="#cb51-283" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Posterior distributions of the model effects&quot;</span></span>
+<span id="cb51-284"><a href="#cb51-284" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-285"><a href="#cb51-285" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(outs, <span class="at">category =</span> <span class="st">&quot;density&quot;</span>)</span>
+<span id="cb51-286"><a href="#cb51-286" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-287"><a href="#cb51-287" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-290"><a href="#cb51-290" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-291"><a href="#cb51-291" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plot-histogram</span></span>
+<span id="cb51-292"><a href="#cb51-292" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Posterior distributions of the model effects (histograms)&quot;</span></span>
+<span id="cb51-293"><a href="#cb51-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-294"><a href="#cb51-294" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(outs, <span class="at">category =</span> <span class="st">&quot;histogram&quot;</span>)</span>
+<span id="cb51-295"><a href="#cb51-295" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-296"><a href="#cb51-296" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-297"><a href="#cb51-297" aria-hidden="true" tabindex="-1"></a>The most important diagnostic plot compares the **empirical** phenotypic distribution to phenotypes **simulated** from the fitted model — the more the two densities overlap, the better the model captures the real data:</span>
+<span id="cb51-298"><a href="#cb51-298" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-301"><a href="#cb51-301" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-302"><a href="#cb51-302" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: plot-ppcheck</span></span>
+<span id="cb51-303"><a href="#cb51-303" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Empirical vs. model-simulated phenotype distributions&quot;</span></span>
+<span id="cb51-304"><a href="#cb51-304" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-305"><a href="#cb51-305" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(outs)</span>
+<span id="cb51-306"><a href="#cb51-306" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-307"><a href="#cb51-307" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-308"><a href="#cb51-308" aria-hidden="true" tabindex="-1"></a>::: {.callout-tip}</span>
+<span id="cb51-309"><a href="#cb51-309" aria-hidden="true" tabindex="-1"></a>If <span class="in">`bayes_met()`</span> raised convergence warnings but these diagnostics look reasonable (Bayesian p-values away from the extremes, $\hat{R}$ close to 1, strong empirical/simulated overlap), it is generally safe to proceed to Step 3.</span>
+<span id="cb51-310"><a href="#cb51-310" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb51-311"><a href="#cb51-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-312"><a href="#cb51-312" aria-hidden="true" tabindex="-1"></a><span class="fu"># Step 3 — Compute the Probabilities</span></span>
+<span id="cb51-313"><a href="#cb51-313" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-314"><a href="#cb51-314" aria-hidden="true" tabindex="-1"></a>This is where the probabilistic framework pays off. <span class="in">`prob_sup()`</span> takes the extracted posterior (<span class="in">`outs`</span>) and a **selection intensity** and returns every probability discussed in the theory talk.</span>
+<span id="cb51-315"><a href="#cb51-315" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-318"><a href="#cb51-318" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-319"><a href="#cb51-319" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: compute-probabilities</span></span>
+<span id="cb51-320"><a href="#cb51-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-321"><a href="#cb51-321" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">prob_sup</span>(</span>
+<span id="cb51-322"><a href="#cb51-322" aria-hidden="true" tabindex="-1"></a>  <span class="at">extr     =</span> outs,</span>
+<span id="cb51-323"><a href="#cb51-323" aria-hidden="true" tabindex="-1"></a>  <span class="at">int      =</span> <span class="fl">0.2</span>,     <span class="co"># selection intensity: top 20% of genotypes</span></span>
+<span id="cb51-324"><a href="#cb51-324" aria-hidden="true" tabindex="-1"></a>  <span class="at">increase =</span> <span class="cn">TRUE</span>,    <span class="co"># we want to INCREASE grain yield (use FALSE for traits like disease severity)</span></span>
+<span id="cb51-325"><a href="#cb51-325" aria-hidden="true" tabindex="-1"></a>  <span class="at">save.df  =</span> <span class="cn">FALSE</span>,   <span class="co"># set TRUE to also write the probability tables to the working directory as .csv</span></span>
+<span id="cb51-326"><a href="#cb51-326" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose  =</span> <span class="cn">FALSE</span></span>
+<span id="cb51-327"><a href="#cb51-327" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-328"><a href="#cb51-328" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-329"><a href="#cb51-329" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-330"><a href="#cb51-330" aria-hidden="true" tabindex="-1"></a>The result, <span class="in">`results`</span>, is a <span class="in">`probsup`</span> object containing two lists:</span>
+<span id="cb51-331"><a href="#cb51-331" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-332"><a href="#cb51-332" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`results$across`</span> — probabilities computed **across** environments (general adaptability)</span>
+<span id="cb51-333"><a href="#cb51-333" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`results$within`</span> — probabilities computed **within** individual environments (local recommendation)</span>
+<span id="cb51-334"><a href="#cb51-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-335"><a href="#cb51-335" aria-hidden="true" tabindex="-1"></a>We will explore both.</span>
+<span id="cb51-336"><a href="#cb51-336" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-337"><a href="#cb51-337" aria-hidden="true" tabindex="-1"></a><span class="fu">## Across-environment results</span></span>
+<span id="cb51-338"><a href="#cb51-338" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-339"><a href="#cb51-339" aria-hidden="true" tabindex="-1"></a><span class="fu">### Posterior genotypic effects (HPD)</span></span>
 <span id="cb51-340"><a href="#cb51-340" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-343"><a href="#cb51-343" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-344"><a href="#cb51-344" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: hpd-plot</span></span>
-<span id="cb51-345"><a href="#cb51-345" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Caterpillar plot of the posterior genotypic main effects (HPD intervals)&quot;</span></span>
-<span id="cb51-346"><a href="#cb51-346" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb51-341"><a href="#cb51-341" aria-hidden="true" tabindex="-1"></a>The highest posterior density (HPD) interval of each genotype&#39;s main effect gives us a first, uncertainty-aware overview of performance:</span>
+<span id="cb51-342"><a href="#cb51-342" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-345"><a href="#cb51-345" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-346"><a href="#cb51-346" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: hpd-table</span></span>
 <span id="cb51-347"><a href="#cb51-347" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-348"><a href="#cb51-348" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;hpd&quot;</span>)</span>
+<span id="cb51-348"><a href="#cb51-348" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>g_hpd)</span>
 <span id="cb51-349"><a href="#cb51-349" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 <span id="cb51-350"><a href="#cb51-350" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-351"><a href="#cb51-351" aria-hidden="true" tabindex="-1"></a>Genotypes are sorted by their posterior mean; the interval width reflects how uncertain that estimate still is — useful context before we collapse everything into a single probability.</span>
-<span id="cb51-352"><a href="#cb51-352" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-353"><a href="#cb51-353" aria-hidden="true" tabindex="-1"></a><span class="fu">### Probability of superior performance</span></span>
-<span id="cb51-354"><a href="#cb51-354" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-357"><a href="#cb51-357" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-358"><a href="#cb51-358" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: performance-table</span></span>
-<span id="cb51-359"><a href="#cb51-359" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-360"><a href="#cb51-360" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>perfo)</span>
-<span id="cb51-361"><a href="#cb51-361" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-353"><a href="#cb51-353" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-354"><a href="#cb51-354" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: hpd-plot</span></span>
+<span id="cb51-355"><a href="#cb51-355" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Caterpillar plot of the posterior genotypic main effects (HPD intervals)&quot;</span></span>
+<span id="cb51-356"><a href="#cb51-356" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 8</span></span>
+<span id="cb51-357"><a href="#cb51-357" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-358"><a href="#cb51-358" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;hpd&quot;</span>)</span>
+<span id="cb51-359"><a href="#cb51-359" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-360"><a href="#cb51-360" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-361"><a href="#cb51-361" aria-hidden="true" tabindex="-1"></a>Genotypes are sorted by their posterior mean; the interval width reflects how uncertain that estimate still is — useful context before we collapse everything into a single probability.</span>
 <span id="cb51-362"><a href="#cb51-362" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-365"><a href="#cb51-365" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-366"><a href="#cb51-366" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: performance-plot</span></span>
-<span id="cb51-367"><a href="#cb51-367" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Probability of superior performance across environments&quot;</span></span>
-<span id="cb51-368"><a href="#cb51-368" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-369"><a href="#cb51-369" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results)</span>
-<span id="cb51-370"><a href="#cb51-370" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-371"><a href="#cb51-371" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-372"><a href="#cb51-372" aria-hidden="true" tabindex="-1"></a>This ranks genotypes by their probability of belonging to the top 20% (our chosen <span class="in">`int`</span>) across the whole trial network — directly answering *&quot;how much can I trust this genotype&#39;s overall performance?&quot;*</span>
-<span id="cb51-373"><a href="#cb51-373" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-374"><a href="#cb51-374" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pairwise probability of superior performance</span></span>
-<span id="cb51-375"><a href="#cb51-375" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-376"><a href="#cb51-376" aria-hidden="true" tabindex="-1"></a>Suppose one of the experimental hybrids is a promising candidate, and we want to know whether it truly outperforms a commercial check. Pick two genotype IDs present in your <span class="in">`results$across$perfo`</span> table (adjust the codes below to genotypes from your own run) and compare them directly:</span>
-<span id="cb51-377"><a href="#cb51-377" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-380"><a href="#cb51-380" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-381"><a href="#cb51-381" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-performance</span></span>
-<span id="cb51-382"><a href="#cb51-382" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-383"><a href="#cb51-383" aria-hidden="true" tabindex="-1"></a><span class="co"># Full pairwise matrix (probability of the row-genotype&#39;s column exceeding</span></span>
-<span id="cb51-384"><a href="#cb51-384" aria-hidden="true" tabindex="-1"></a><span class="co"># every other genotype)</span></span>
-<span id="cb51-385"><a href="#cb51-385" aria-hidden="true" tabindex="-1"></a>results<span class="sc">$</span>across<span class="sc">$</span>pair_perfo[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
-<span id="cb51-386"><a href="#cb51-386" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-387"><a href="#cb51-387" aria-hidden="true" tabindex="-1"></a><span class="co"># Direct query: replace &quot;G1&quot; and &quot;G2&quot; with an experimental hybrid and a</span></span>
-<span id="cb51-388"><a href="#cb51-388" aria-hidden="true" tabindex="-1"></a><span class="co"># commercial check from your own `maize` run</span></span>
-<span id="cb51-389"><a href="#cb51-389" aria-hidden="true" tabindex="-1"></a><span class="co"># results$across$pair_perfo[&quot;G1&quot;, &quot;G2&quot;]</span></span>
-<span id="cb51-390"><a href="#cb51-390" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-391"><a href="#cb51-391" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-394"><a href="#cb51-394" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-395"><a href="#cb51-395" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-performance-plot</span></span>
-<span id="cb51-396"><a href="#cb51-396" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Heatmap of pairwise probabilities of superior performance&quot;</span></span>
-<span id="cb51-397"><a href="#cb51-397" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 9</span></span>
-<span id="cb51-398"><a href="#cb51-398" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
-<span id="cb51-399"><a href="#cb51-399" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-400"><a href="#cb51-400" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;pair_perfo&quot;</span>)</span>
-<span id="cb51-401"><a href="#cb51-401" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-402"><a href="#cb51-402" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-403"><a href="#cb51-403" aria-hidden="true" tabindex="-1"></a>Reading the heatmap: a cell&#39;s color is the probability that the genotype on the **x-axis** outperforms the genotype on the **y-axis**.</span>
-<span id="cb51-404"><a href="#cb51-404" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-405"><a href="#cb51-405" aria-hidden="true" tabindex="-1"></a><span class="fu">### Probability of superior stability</span></span>
-<span id="cb51-406"><a href="#cb51-406" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-407"><a href="#cb51-407" aria-hidden="true" tabindex="-1"></a>Recall from the theory talk: stability here means a *low* genotype-by-environment interaction variance. <span class="in">`ProbBreed`</span> reports this both at the location level (<span class="in">`gl`</span>) and the region level (<span class="in">`gm`</span>):</span>
-<span id="cb51-408"><a href="#cb51-408" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-411"><a href="#cb51-411" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-412"><a href="#cb51-412" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: stability-tables</span></span>
-<span id="cb51-413"><a href="#cb51-413" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-414"><a href="#cb51-414" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>stabi<span class="sc">$</span>gl)  <span class="co"># stability across locations</span></span>
-<span id="cb51-415"><a href="#cb51-415" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>stabi<span class="sc">$</span>gm)  <span class="co"># stability across regions</span></span>
-<span id="cb51-416"><a href="#cb51-416" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-417"><a href="#cb51-417" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-420"><a href="#cb51-420" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-421"><a href="#cb51-421" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: stability-plot</span></span>
-<span id="cb51-422"><a href="#cb51-422" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Probability of superior stability (location and region levels)&quot;</span></span>
+<span id="cb51-363"><a href="#cb51-363" aria-hidden="true" tabindex="-1"></a><span class="fu">### Probability of superior performance</span></span>
+<span id="cb51-364"><a href="#cb51-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-367"><a href="#cb51-367" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-368"><a href="#cb51-368" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: performance-table</span></span>
+<span id="cb51-369"><a href="#cb51-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-370"><a href="#cb51-370" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>perfo)</span>
+<span id="cb51-371"><a href="#cb51-371" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-372"><a href="#cb51-372" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-375"><a href="#cb51-375" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-376"><a href="#cb51-376" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: performance-plot</span></span>
+<span id="cb51-377"><a href="#cb51-377" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Probability of superior performance across environments&quot;</span></span>
+<span id="cb51-378"><a href="#cb51-378" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-379"><a href="#cb51-379" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results)</span>
+<span id="cb51-380"><a href="#cb51-380" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-381"><a href="#cb51-381" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-382"><a href="#cb51-382" aria-hidden="true" tabindex="-1"></a>This ranks genotypes by their probability of belonging to the top 20% (our chosen <span class="in">`int`</span>) across the whole trial network — directly answering *&quot;how much can I trust this genotype&#39;s overall performance?&quot;*</span>
+<span id="cb51-383"><a href="#cb51-383" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-384"><a href="#cb51-384" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pairwise probability of superior performance</span></span>
+<span id="cb51-385"><a href="#cb51-385" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-386"><a href="#cb51-386" aria-hidden="true" tabindex="-1"></a>Suppose one of the experimental hybrids is a promising candidate, and we want to know whether it truly outperforms a commercial check. Pick two genotype IDs present in your <span class="in">`results$across$perfo`</span> table (adjust the codes below to genotypes from your own run) and compare them directly:</span>
+<span id="cb51-387"><a href="#cb51-387" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-390"><a href="#cb51-390" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-391"><a href="#cb51-391" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-performance</span></span>
+<span id="cb51-392"><a href="#cb51-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-393"><a href="#cb51-393" aria-hidden="true" tabindex="-1"></a><span class="co"># Full pairwise matrix (probability of the row-genotype&#39;s column exceeding</span></span>
+<span id="cb51-394"><a href="#cb51-394" aria-hidden="true" tabindex="-1"></a><span class="co"># every other genotype)</span></span>
+<span id="cb51-395"><a href="#cb51-395" aria-hidden="true" tabindex="-1"></a>results<span class="sc">$</span>across<span class="sc">$</span>pair_perfo[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb51-396"><a href="#cb51-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-397"><a href="#cb51-397" aria-hidden="true" tabindex="-1"></a><span class="co"># Direct query: replace &quot;G1&quot; and &quot;G2&quot; with an experimental hybrid and a</span></span>
+<span id="cb51-398"><a href="#cb51-398" aria-hidden="true" tabindex="-1"></a><span class="co"># commercial check from your own `maize` run</span></span>
+<span id="cb51-399"><a href="#cb51-399" aria-hidden="true" tabindex="-1"></a><span class="co"># results$across$pair_perfo[&quot;G1&quot;, &quot;G2&quot;]</span></span>
+<span id="cb51-400"><a href="#cb51-400" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-401"><a href="#cb51-401" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-404"><a href="#cb51-404" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-405"><a href="#cb51-405" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-performance-plot</span></span>
+<span id="cb51-406"><a href="#cb51-406" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Heatmap of pairwise probabilities of superior performance&quot;</span></span>
+<span id="cb51-407"><a href="#cb51-407" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 9</span></span>
+<span id="cb51-408"><a href="#cb51-408" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
+<span id="cb51-409"><a href="#cb51-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-410"><a href="#cb51-410" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;pair_perfo&quot;</span>)</span>
+<span id="cb51-411"><a href="#cb51-411" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-412"><a href="#cb51-412" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-413"><a href="#cb51-413" aria-hidden="true" tabindex="-1"></a>Reading the heatmap: a cell&#39;s color is the probability that the genotype on the **x-axis** outperforms the genotype on the **y-axis**.</span>
+<span id="cb51-414"><a href="#cb51-414" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-415"><a href="#cb51-415" aria-hidden="true" tabindex="-1"></a><span class="fu">### Probability of superior stability</span></span>
+<span id="cb51-416"><a href="#cb51-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-417"><a href="#cb51-417" aria-hidden="true" tabindex="-1"></a>Recall from the theory talk: stability here means a *low* genotype-by-environment interaction variance. <span class="in">`ProbBreed`</span> reports this both at the location level (<span class="in">`gl`</span>) and the region level (<span class="in">`gm`</span>):</span>
+<span id="cb51-418"><a href="#cb51-418" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-421"><a href="#cb51-421" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-422"><a href="#cb51-422" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: stability-tables</span></span>
 <span id="cb51-423"><a href="#cb51-423" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-424"><a href="#cb51-424" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;stabi&quot;</span>)</span>
-<span id="cb51-425"><a href="#cb51-425" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-426"><a href="#cb51-426" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-427"><a href="#cb51-427" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pairwise probability of superior stability</span></span>
-<span id="cb51-428"><a href="#cb51-428" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-431"><a href="#cb51-431" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-432"><a href="#cb51-432" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-stability</span></span>
+<span id="cb51-424"><a href="#cb51-424" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>stabi<span class="sc">$</span>gl)  <span class="co"># stability across locations</span></span>
+<span id="cb51-425"><a href="#cb51-425" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>stabi<span class="sc">$</span>gm)  <span class="co"># stability across regions</span></span>
+<span id="cb51-426"><a href="#cb51-426" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-427"><a href="#cb51-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-430"><a href="#cb51-430" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-431"><a href="#cb51-431" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: stability-plot</span></span>
+<span id="cb51-432"><a href="#cb51-432" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Probability of superior stability (location and region levels)&quot;</span></span>
 <span id="cb51-433"><a href="#cb51-433" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-434"><a href="#cb51-434" aria-hidden="true" tabindex="-1"></a>results<span class="sc">$</span>across<span class="sc">$</span>pair_stabi<span class="sc">$</span>gl[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]  <span class="co"># location-level pairwise stability</span></span>
-<span id="cb51-435"><a href="#cb51-435" aria-hidden="true" tabindex="-1"></a>results<span class="sc">$</span>across<span class="sc">$</span>pair_stabi<span class="sc">$</span>gm[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]  <span class="co"># region-level pairwise stability</span></span>
-<span id="cb51-436"><a href="#cb51-436" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-437"><a href="#cb51-437" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-440"><a href="#cb51-440" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-441"><a href="#cb51-441" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-stability-plot</span></span>
-<span id="cb51-442"><a href="#cb51-442" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Heatmap of pairwise probabilities of superior stability&quot;</span></span>
-<span id="cb51-443"><a href="#cb51-443" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 9</span></span>
-<span id="cb51-444"><a href="#cb51-444" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
-<span id="cb51-445"><a href="#cb51-445" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-446"><a href="#cb51-446" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;pair_stabi&quot;</span>)</span>
-<span id="cb51-447"><a href="#cb51-447" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-448"><a href="#cb51-448" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-449"><a href="#cb51-449" aria-hidden="true" tabindex="-1"></a><span class="fu">### Joint probability of superior performance and stability</span></span>
-<span id="cb51-450"><a href="#cb51-450" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-451"><a href="#cb51-451" aria-hidden="true" tabindex="-1"></a>The metric that usually matters most for a final recommendation call — a genotype that is simultaneously high-performing **and** dependable:</span>
-<span id="cb51-452"><a href="#cb51-452" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-455"><a href="#cb51-455" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-456"><a href="#cb51-456" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: joint-table</span></span>
-<span id="cb51-457"><a href="#cb51-457" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-458"><a href="#cb51-458" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>joint)</span>
-<span id="cb51-459"><a href="#cb51-459" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-434"><a href="#cb51-434" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;stabi&quot;</span>)</span>
+<span id="cb51-435"><a href="#cb51-435" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-436"><a href="#cb51-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-437"><a href="#cb51-437" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pairwise probability of superior stability</span></span>
+<span id="cb51-438"><a href="#cb51-438" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-441"><a href="#cb51-441" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-442"><a href="#cb51-442" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-stability</span></span>
+<span id="cb51-443"><a href="#cb51-443" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-444"><a href="#cb51-444" aria-hidden="true" tabindex="-1"></a>results<span class="sc">$</span>across<span class="sc">$</span>pair_stabi<span class="sc">$</span>gl[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]  <span class="co"># location-level pairwise stability</span></span>
+<span id="cb51-445"><a href="#cb51-445" aria-hidden="true" tabindex="-1"></a>results<span class="sc">$</span>across<span class="sc">$</span>pair_stabi<span class="sc">$</span>gm[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]  <span class="co"># region-level pairwise stability</span></span>
+<span id="cb51-446"><a href="#cb51-446" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-447"><a href="#cb51-447" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-450"><a href="#cb51-450" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-451"><a href="#cb51-451" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: pairwise-stability-plot</span></span>
+<span id="cb51-452"><a href="#cb51-452" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Heatmap of pairwise probabilities of superior stability&quot;</span></span>
+<span id="cb51-453"><a href="#cb51-453" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 9</span></span>
+<span id="cb51-454"><a href="#cb51-454" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
+<span id="cb51-455"><a href="#cb51-455" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-456"><a href="#cb51-456" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;pair_stabi&quot;</span>)</span>
+<span id="cb51-457"><a href="#cb51-457" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-458"><a href="#cb51-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-459"><a href="#cb51-459" aria-hidden="true" tabindex="-1"></a><span class="fu">### Joint probability of superior performance and stability</span></span>
 <span id="cb51-460"><a href="#cb51-460" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-463"><a href="#cb51-463" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-464"><a href="#cb51-464" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: joint-plot</span></span>
-<span id="cb51-465"><a href="#cb51-465" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Joint probability of superior performance and stability&quot;</span></span>
-<span id="cb51-466"><a href="#cb51-466" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-467"><a href="#cb51-467" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;joint&quot;</span>)</span>
-<span id="cb51-468"><a href="#cb51-468" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-469"><a href="#cb51-469" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-470"><a href="#cb51-470" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
-<span id="cb51-471"><a href="#cb51-471" aria-hidden="true" tabindex="-1"></a><span class="fu">## Discussion prompt</span></span>
-<span id="cb51-472"><a href="#cb51-472" aria-hidden="true" tabindex="-1"></a>Look at the genotype that ranks #1 in <span class="in">`perfo`</span> (raw performance). Does it also rank #1 in <span class="in">`joint`</span>? If not, why might that be — and which genotype would *you* recommend to a grower, and why?</span>
-<span id="cb51-473"><a href="#cb51-473" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb51-474"><a href="#cb51-474" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-475"><a href="#cb51-475" aria-hidden="true" tabindex="-1"></a><span class="fu">## Within-environment results</span></span>
+<span id="cb51-461"><a href="#cb51-461" aria-hidden="true" tabindex="-1"></a>The metric that usually matters most for a final recommendation call — a genotype that is simultaneously high-performing **and** dependable:</span>
+<span id="cb51-462"><a href="#cb51-462" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-465"><a href="#cb51-465" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-466"><a href="#cb51-466" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: joint-table</span></span>
+<span id="cb51-467"><a href="#cb51-467" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-468"><a href="#cb51-468" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>across<span class="sc">$</span>joint)</span>
+<span id="cb51-469"><a href="#cb51-469" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-470"><a href="#cb51-470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-473"><a href="#cb51-473" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-474"><a href="#cb51-474" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: joint-plot</span></span>
+<span id="cb51-475"><a href="#cb51-475" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Joint probability of superior performance and stability&quot;</span></span>
 <span id="cb51-476"><a href="#cb51-476" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-477"><a href="#cb51-477" aria-hidden="true" tabindex="-1"></a>Across-environment probabilities describe general adaptability. But breeders often need **local** recommendations for a specific location or region. That is what <span class="in">`results$within`</span> provides.</span>
-<span id="cb51-478"><a href="#cb51-478" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-479"><a href="#cb51-479" aria-hidden="true" tabindex="-1"></a><span class="fu">### Probability of superior performance within environments</span></span>
-<span id="cb51-480"><a href="#cb51-480" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-483"><a href="#cb51-483" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-484"><a href="#cb51-484" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: within-performance</span></span>
-<span id="cb51-485"><a href="#cb51-485" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-486"><a href="#cb51-486" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>within<span class="sc">$</span>perfo<span class="sc">$</span>gl)  <span class="co"># within-location</span></span>
-<span id="cb51-487"><a href="#cb51-487" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-477"><a href="#cb51-477" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;joint&quot;</span>)</span>
+<span id="cb51-478"><a href="#cb51-478" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-479"><a href="#cb51-479" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-480"><a href="#cb51-480" aria-hidden="true" tabindex="-1"></a>::: {.callout-important}</span>
+<span id="cb51-481"><a href="#cb51-481" aria-hidden="true" tabindex="-1"></a><span class="fu">## Discussion prompt</span></span>
+<span id="cb51-482"><a href="#cb51-482" aria-hidden="true" tabindex="-1"></a>Look at the genotype that ranks #1 in <span class="in">`perfo`</span> (raw performance). Does it also rank #1 in <span class="in">`joint`</span>? If not, why might that be — and which genotype would *you* recommend to a grower, and why?</span>
+<span id="cb51-483"><a href="#cb51-483" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb51-484"><a href="#cb51-484" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-485"><a href="#cb51-485" aria-hidden="true" tabindex="-1"></a><span class="fu">## Within-environment results</span></span>
+<span id="cb51-486"><a href="#cb51-486" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-487"><a href="#cb51-487" aria-hidden="true" tabindex="-1"></a>Across-environment probabilities describe general adaptability. But breeders often need **local** recommendations for a specific location or region. That is what <span class="in">`results$within`</span> provides.</span>
 <span id="cb51-488"><a href="#cb51-488" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-491"><a href="#cb51-491" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-492"><a href="#cb51-492" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: within-performance-plot</span></span>
-<span id="cb51-493"><a href="#cb51-493" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Heatmap of within-environment probabilities of superior performance&quot;</span></span>
-<span id="cb51-494"><a href="#cb51-494" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 10</span></span>
-<span id="cb51-495"><a href="#cb51-495" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
-<span id="cb51-496"><a href="#cb51-496" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-497"><a href="#cb51-497" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;perfo&quot;</span>, <span class="at">level =</span> <span class="st">&quot;within&quot;</span>)</span>
-<span id="cb51-498"><a href="#cb51-498" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-499"><a href="#cb51-499" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-500"><a href="#cb51-500" aria-hidden="true" tabindex="-1"></a>Grey cells indicate a genotype that was not evaluated in that particular environment — expected, given the incomplete block design of this trial network.</span>
-<span id="cb51-501"><a href="#cb51-501" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-502"><a href="#cb51-502" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pairwise probability of superior performance within environments</span></span>
-<span id="cb51-503"><a href="#cb51-503" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-504"><a href="#cb51-504" aria-hidden="true" tabindex="-1"></a>Because this comparison is specific to each environment, <span class="in">`plot()`</span> returns a **list of plots** (one per location/region) rather than a single figure. Store it in an object before plotting:</span>
-<span id="cb51-505"><a href="#cb51-505" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-508"><a href="#cb51-508" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-509"><a href="#cb51-509" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: within-pairwise</span></span>
-<span id="cb51-510"><a href="#cb51-510" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb51-489"><a href="#cb51-489" aria-hidden="true" tabindex="-1"></a><span class="fu">### Probability of superior performance within environments</span></span>
+<span id="cb51-490"><a href="#cb51-490" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-493"><a href="#cb51-493" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-494"><a href="#cb51-494" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: within-performance</span></span>
+<span id="cb51-495"><a href="#cb51-495" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-496"><a href="#cb51-496" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(results<span class="sc">$</span>within<span class="sc">$</span>perfo<span class="sc">$</span>gl)  <span class="co"># within-location</span></span>
+<span id="cb51-497"><a href="#cb51-497" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-498"><a href="#cb51-498" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-501"><a href="#cb51-501" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-502"><a href="#cb51-502" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: within-performance-plot</span></span>
+<span id="cb51-503"><a href="#cb51-503" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: &quot;Heatmap of within-environment probabilities of superior performance&quot;</span></span>
+<span id="cb51-504"><a href="#cb51-504" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 10</span></span>
+<span id="cb51-505"><a href="#cb51-505" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 9</span></span>
+<span id="cb51-506"><a href="#cb51-506" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-507"><a href="#cb51-507" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;perfo&quot;</span>, <span class="at">level =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb51-508"><a href="#cb51-508" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-509"><a href="#cb51-509" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-510"><a href="#cb51-510" aria-hidden="true" tabindex="-1"></a>Grey cells indicate a genotype that was not evaluated in that particular environment — expected, given the incomplete block design of this trial network.</span>
 <span id="cb51-511"><a href="#cb51-511" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-512"><a href="#cb51-512" aria-hidden="true" tabindex="-1"></a>pairsupwithin <span class="ot">&lt;-</span> <span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;pair_perfo&quot;</span>, <span class="at">level =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb51-512"><a href="#cb51-512" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pairwise probability of superior performance within environments</span></span>
 <span id="cb51-513"><a href="#cb51-513" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-514"><a href="#cb51-514" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: inspect a single location or region</span></span>
-<span id="cb51-515"><a href="#cb51-515" aria-hidden="true" tabindex="-1"></a>pairsupwithin<span class="sc">$</span>gl<span class="sc">$</span>E1   <span class="co"># pairwise comparisons within location &quot;E1&quot;</span></span>
-<span id="cb51-516"><a href="#cb51-516" aria-hidden="true" tabindex="-1"></a>pairsupwithin<span class="sc">$</span>gm<span class="sc">$</span>R1   <span class="co"># pairwise comparisons within region &quot;R1&quot;</span></span>
-<span id="cb51-517"><a href="#cb51-517" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-518"><a href="#cb51-518" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-519"><a href="#cb51-519" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
-<span id="cb51-520"><a href="#cb51-520" aria-hidden="true" tabindex="-1"></a>Substitute <span class="in">`&quot;E1&quot;`</span>/<span class="in">`&quot;R1&quot;`</span> above with the actual location/region codes present in your fitted <span class="in">`maize`</span> model (check <span class="in">`levels(factor(maize$Location))`</span> and <span class="in">`levels(factor(maize$Region))`</span>).</span>
-<span id="cb51-521"><a href="#cb51-521" aria-hidden="true" tabindex="-1"></a>:::</span>
-<span id="cb51-522"><a href="#cb51-522" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-523"><a href="#cb51-523" aria-hidden="true" tabindex="-1"></a><span class="fu"># Wrap-Up: The Questions We Can Now Answer</span></span>
-<span id="cb51-524"><a href="#cb51-524" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-525"><a href="#cb51-525" aria-hidden="true" tabindex="-1"></a>Having walked through the full pipeline, we are equipped to answer exactly the kind of questions that motivate cultivar recommendation in practice:</span>
-<span id="cb51-526"><a href="#cb51-526" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-527"><a href="#cb51-527" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What is the **risk** of recommending a given selection candidate?</span>
-<span id="cb51-528"><a href="#cb51-528" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>What is the **probability** that a candidate performs well across — or within — environments?</span>
-<span id="cb51-529"><a href="#cb51-529" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Is a candidate genotype **better than a commercial check**, and with what confidence?</span>
-<span id="cb51-530"><a href="#cb51-530" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>How likely is a genotype to perform **similarly** across the target population of environments?</span>
-<span id="cb51-531"><a href="#cb51-531" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Is a candidate **more stable** than the check cultivar?</span>
-<span id="cb51-532"><a href="#cb51-532" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Which genotype has both **superior and dependable** performance across environments?</span>
-<span id="cb51-533"><a href="#cb51-533" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-534"><a href="#cb51-534" aria-hidden="true" tabindex="-1"></a><span class="fu"># Practice Exercise</span></span>
-<span id="cb51-535"><a href="#cb51-535" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-536"><a href="#cb51-536" aria-hidden="true" tabindex="-1"></a>Now it&#39;s your turn. Using the fitted <span class="in">`results`</span> object:</span>
-<span id="cb51-537"><a href="#cb51-537" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-538"><a href="#cb51-538" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Identify the genotype with the highest **joint** probability across **regions** (<span class="in">`results$across$joint`</span>, filtered to <span class="in">`level == &quot;Region&quot;`</span>).</span>
-<span id="cb51-539"><a href="#cb51-539" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pick any commercial check in the <span class="in">`maize`</span> data and find the experimental hybrid most likely to outperform it, using <span class="in">`results$across$pair_perfo`</span>.</span>
-<span id="cb51-540"><a href="#cb51-540" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Re-run Step 3 with <span class="in">`int = 0.1`</span> (a stricter, top-10% selection intensity). How much does the ranking in <span class="in">`results$across$perfo`</span> change?</span>
-<span id="cb51-541"><a href="#cb51-541" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-544"><a href="#cb51-544" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb51-545"><a href="#cb51-545" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: exercise-scaffold</span></span>
-<span id="cb51-546"><a href="#cb51-546" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb51-514"><a href="#cb51-514" aria-hidden="true" tabindex="-1"></a>Because this comparison is specific to each environment, <span class="in">`plot()`</span> returns a **list of plots** (one per location/region) rather than a single figure. Store it in an object before plotting:</span>
+<span id="cb51-515"><a href="#cb51-515" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-518"><a href="#cb51-518" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-519"><a href="#cb51-519" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: within-pairwise</span></span>
+<span id="cb51-520"><a href="#cb51-520" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb51-521"><a href="#cb51-521" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-522"><a href="#cb51-522" aria-hidden="true" tabindex="-1"></a>pairsupwithin <span class="ot">&lt;-</span> <span class="fu">plot</span>(results, <span class="at">category =</span> <span class="st">&quot;pair_perfo&quot;</span>, <span class="at">level =</span> <span class="st">&quot;within&quot;</span>)</span>
+<span id="cb51-523"><a href="#cb51-523" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-524"><a href="#cb51-524" aria-hidden="true" tabindex="-1"></a><span class="co"># Example: inspect a single location or region</span></span>
+<span id="cb51-525"><a href="#cb51-525" aria-hidden="true" tabindex="-1"></a>pairsupwithin<span class="sc">$</span>gl<span class="sc">$</span>E1   <span class="co"># pairwise comparisons within location &quot;E1&quot;</span></span>
+<span id="cb51-526"><a href="#cb51-526" aria-hidden="true" tabindex="-1"></a>pairsupwithin<span class="sc">$</span>gm<span class="sc">$</span>R1   <span class="co"># pairwise comparisons within region &quot;R1&quot;</span></span>
+<span id="cb51-527"><a href="#cb51-527" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-528"><a href="#cb51-528" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-529"><a href="#cb51-529" aria-hidden="true" tabindex="-1"></a>::: {.callout-note}</span>
+<span id="cb51-530"><a href="#cb51-530" aria-hidden="true" tabindex="-1"></a>Substitute <span class="in">`&quot;E1&quot;`</span>/<span class="in">`&quot;R1&quot;`</span> above with the actual location/region codes present in your fitted <span class="in">`maize`</span> model (check <span class="in">`levels(factor(maize$Location))`</span> and <span class="in">`levels(factor(maize$Region))`</span>).</span>
+<span id="cb51-531"><a href="#cb51-531" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb51-532"><a href="#cb51-532" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-533"><a href="#cb51-533" aria-hidden="true" tabindex="-1"></a><span class="fu"># Wrap-Up: The Questions We Can Now Answer</span></span>
+<span id="cb51-534"><a href="#cb51-534" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-535"><a href="#cb51-535" aria-hidden="true" tabindex="-1"></a>Having walked through the full pipeline, we are equipped to answer exactly the kind of questions that motivate cultivar recommendation in practice:</span>
+<span id="cb51-536"><a href="#cb51-536" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-537"><a href="#cb51-537" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>What is the **risk** of recommending a given selection candidate?</span>
+<span id="cb51-538"><a href="#cb51-538" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>What is the **probability** that a candidate performs well across — or within — environments?</span>
+<span id="cb51-539"><a href="#cb51-539" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Is a candidate genotype **better than a commercial check**, and with what confidence?</span>
+<span id="cb51-540"><a href="#cb51-540" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>How likely is a genotype to perform **similarly** across the target population of environments?</span>
+<span id="cb51-541"><a href="#cb51-541" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Is a candidate **more stable** than the check cultivar?</span>
+<span id="cb51-542"><a href="#cb51-542" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>Which genotype has both **superior and dependable** performance across environments?</span>
+<span id="cb51-543"><a href="#cb51-543" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-544"><a href="#cb51-544" aria-hidden="true" tabindex="-1"></a><span class="fu"># Practice Exercise</span></span>
+<span id="cb51-545"><a href="#cb51-545" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-546"><a href="#cb51-546" aria-hidden="true" tabindex="-1"></a>Now it&#39;s your turn. Using the fitted <span class="in">`results`</span> object:</span>
 <span id="cb51-547"><a href="#cb51-547" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-548"><a href="#cb51-548" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
-<span id="cb51-549"><a href="#cb51-549" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb51-550"><a href="#cb51-550" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-551"><a href="#cb51-551" aria-hidden="true" tabindex="-1"></a><span class="fu"># References</span></span>
-<span id="cb51-552"><a href="#cb51-552" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb51-553"><a href="#cb51-553" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Chaves, S. F. S., Krause, M. D., Dias, L. A. S., Garcia, A. A. F., &amp; Dias, K. O. G. (2024). ProbBreed: a novel tool for calculating the risk of cultivar recommendation in multienvironment trials. *G3: Genes\|Genomes\|Genetics*, 14(3), jkae013. <span class="ot">&lt;https://doi.org/10.1093/g3journal/jkae013&gt;</span></span>
-<span id="cb51-554"><a href="#cb51-554" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Dias, K. O. G., Santos, J. P. R., Krause, M. D., Piepho, H.-P., Guimarães, L. J. M., Pastina, M. M., &amp; Garcia, A. A. F. (2022). Leveraging probability concepts for cultivar recommendation in multi-environment trials. *Theoretical and Applied Genetics*, 135(4), 1385–1399. <span class="ot">&lt;https://doi.org/10.1007/s00122-022-04041-y&gt;</span></span>
-<span id="cb51-555"><a href="#cb51-555" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Package documentation: <span class="ot">&lt;https://saulo-chaves.github.io/ProbBreed_site/&gt;</span></span>
-<span id="cb51-556"><a href="#cb51-556" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Source code: <span class="ot">&lt;https://github.com/saulo-chaves/ProbBreed&gt;</span></span>
+<span id="cb51-548"><a href="#cb51-548" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Identify the genotype with the highest **joint** probability across **regions** (<span class="in">`results$across$joint`</span>, filtered to <span class="in">`level == &quot;Region&quot;`</span>).</span>
+<span id="cb51-549"><a href="#cb51-549" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Pick any commercial check in the <span class="in">`maize`</span> data and find the experimental hybrid most likely to outperform it, using <span class="in">`results$across$pair_perfo`</span>.</span>
+<span id="cb51-550"><a href="#cb51-550" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Re-run Step 3 with <span class="in">`int = 0.1`</span> (a stricter, top-10% selection intensity). How much does the ranking in <span class="in">`results$across$perfo`</span> change?</span>
+<span id="cb51-551"><a href="#cb51-551" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-554"><a href="#cb51-554" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb51-555"><a href="#cb51-555" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: exercise-scaffold</span></span>
+<span id="cb51-556"><a href="#cb51-556" aria-hidden="true" tabindex="-1"></a><span class="co">#| eval: false</span></span>
+<span id="cb51-557"><a href="#cb51-557" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-558"><a href="#cb51-558" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb51-559"><a href="#cb51-559" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb51-560"><a href="#cb51-560" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-561"><a href="#cb51-561" aria-hidden="true" tabindex="-1"></a><span class="fu"># References</span></span>
+<span id="cb51-562"><a href="#cb51-562" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-563"><a href="#cb51-563" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Chaves, S. F. S., Krause, M. D., Dias, L. A. S., Garcia, A. A. F., &amp; Dias, K. O. G. (2024). ProbBreed: a novel tool for calculating the risk of cultivar recommendation in multienvironment trials. *G3: Genes\|Genomes\|Genetics*, 14(3), jkae013. <span class="ot">&lt;https://doi.org/10.1093/g3journal/jkae013&gt;</span></span>
+<span id="cb51-564"><a href="#cb51-564" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Dias, K. O. G., Santos, J. P. R., Krause, M. D., Piepho, H.-P., Guimarães, L. J. M., Pastina, M. M., &amp; Garcia, A. A. F. (2022). Leveraging probability concepts for cultivar recommendation in multi-environment trials. *Theoretical and Applied Genetics*, 135(4), 1385–1399. <span class="ot">&lt;https://doi.org/10.1007/s00122-022-04041-y&gt;</span></span>
+<span id="cb51-565"><a href="#cb51-565" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Package documentation: <span class="ot">&lt;https://saulo-chaves.github.io/ProbBreed_site/&gt;</span></span>
+<span id="cb51-566"><a href="#cb51-566" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Source code: <span class="ot">&lt;https://github.com/saulo-chaves/ProbBreed&gt;</span></span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
