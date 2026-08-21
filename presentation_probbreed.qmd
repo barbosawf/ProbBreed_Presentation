@@ -62,7 +62,18 @@ format:
     #   d) If you would rather run your own relay server instead of the
     #      default public one, or pin a fixed id/secret across re-
     #      renders, see: https://quarto.org/docs/presentations/revealjs/presenting.html#multiplex
-    multiplex: true
+    #
+    # NOTE: older Quarto CLI versions have a *different, dead* default
+    # relay server baked in (https://reveal-multiplex.glitch.me/, which
+    # now returns HTTP 410 Gone -- Glitch discontinued hosting it). That
+    # produces "Unexpected token '<' ... is not valid JSON" at render
+    # time. The `url:` below pins the current, working relay
+    # (https://multiplex.up.railway.app/, confirmed HTTP 200) explicitly,
+    # so rendering works regardless of which default your local Quarto
+    # version has. If you still hit this error, also update Quarto:
+    # https://quarto.org/docs/get-started/
+    multiplex:
+      url: "https://multiplex.up.railway.app/"
 execute:
   echo: true
   # NOTE: `eval` is intentionally left at its default (true) at the
