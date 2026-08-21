@@ -72,9 +72,10 @@ if (!requireNamespace("ProbBreed", quietly = TRUE)) {
   install.packages("ProbBreed")
 }
 
-# Alternatively, the development version from GitHub:
-# if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")
-# remotes::install_github("saulo-chaves/ProbBreed")
+# Alternatively, the development version from GitHub
+# (pak resolves and installs dependencies faster than install.packages):
+# install.packages("pak")
+# pak::pak("saulo-chaves/ProbBreed")
 ```
 
 ```{r}
