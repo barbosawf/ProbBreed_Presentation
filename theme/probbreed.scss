@@ -337,7 +337,8 @@ $code-block-border-color: #e08e45 !default;
 // little extra tightening is needed on top of the bigger code font to
 // avoid a ~40px overflow.
 #prob_sup-the-probsup-object h2 {
-  margin-bottom: 0.25em;
+  margin-bottom: 0.15em;
+  padding-bottom: 0.08em;
 }
 #prob_sup-the-probsup-object div.sourceCode {
   padding: 0.4em 0.8em;
@@ -345,6 +346,15 @@ $code-block-border-color: #e08e45 !default;
 }
 #prob_sup-the-probsup-object > p {
   margin: 0.3em 0;
+}
+// Diagram box padding/spacing is set via the mermaid init string itself
+// (see the qmd source); this trims the empty margin reveal otherwise
+// leaves above and below the rendered SVG.
+#prob_sup-the-probsup-object .cell-output-display {
+  margin: 0.1em 0 !important;
+}
+#prob_sup-the-probsup-object .cell-output-display svg {
+  margin: 0 auto !important;
 }
 // Zebra-striped rows for readability. Uses the same blue tint pair as
 // the RCBD rows in the model-catalog table (slide 12) so the palette is

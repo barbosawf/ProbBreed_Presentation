@@ -338,9 +338,9 @@ Returns an object of class `probsup` — **two lists**:
 
 ```{mermaid}
 %%| fig-width: 9.5
-%%| fig-height: 2.6
+%%| fig-height: 1.8
 %%| echo: false
-%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 18, "htmlLabels": true, "nodeSpacing": 30, "rankSpacing": 40, "wrappingWidth": 240}}%%
+%%{init: {"theme": "base", "themeVariables": {"lineColor": "#8a8a8a", "fontFamily": "Helvetica, Arial, sans-serif"}, "flowchart": {"padding": 3, "htmlLabels": true, "nodeSpacing": 10, "rankSpacing": 14, "wrappingWidth": 240}}%%
 flowchart LR
     P["prob_sup()"]:::green --> A["results$across<br/>whole trial network"]:::data
     P --> W["results$within<br/>each environment"]:::amber
@@ -351,7 +351,7 @@ flowchart LR
     classDef amber fill:#fbe3c7,stroke:#b3611e,stroke-width:2px,color:#5c3413
 ```
 
-::: {style="font-size: 0.75em; margin-top: -0.3em;"}
+::: {style="font-size: 0.62em; line-height: 1.05; margin-top: -0.5em;"}
 - `results$across` — superior performance, pairwise performance, superior stability, pairwise stability, and joint probability, computed **across the whole trial network**
 - `results$within` — performance and pairwise performance, computed separately **within each individual environment**
 - Only one extra input is needed beyond the fitted model: the **selection intensity** (`int`)
